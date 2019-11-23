@@ -1,100 +1,12 @@
 <?php 
 
-function Cipher($ch, $key){
-    
-	if (!ctype_alpha($ch))
-		return $ch;
-
-	$offset = ord(ctype_upper($ch) ? 'A' : 'a');
-	
-	return chr(fmod(((ord($ch) + $key) - $offset), 26) + $offset);
-	
-}
-
-function Encrypt($input, $year, $month, $day){
-    
-	$output = "";
-	
-	$count = 0;
-	
-	$key = 0;
-	
-	$inputArr = str_split($input);
-	
-	foreach ($inputArr as $ch){
-	    
-	    if($count % 2 == 0)
-	        $key = $day % 26;
-	    
-	    else if($count % 3 == 0)
-	        $key = $month % 26;
-	        
-	    else
-	        $key = $year % 26;
-	        
-		$output .= Cipher($ch, $key);
-		
-		$count += 1;
-		
-	}
-
-	return $output;
-}
-
-function Decrypt($input, $year, $month, $day){
-    
-	$output = "";
-	
-	$count = 0;
-	
-	$key = 0;
-	
-	$inputArr = str_split($input);
-	
-	foreach ($inputArr as $ch){
-	    
-	    if($count % 2 == 0)
-	        $key = $day % 26;
-	    
-	    else if($count % 3 == 0)
-	        $key = $month % 26;
-	        
-	    else
-	        $key = $year % 26;
-	        
-		$output .= Cipher($ch, 26 - $key);
-		
-		$count += 1;
-		
-	}
-
-	return $output;
-}
-
-
 if($_SERVER['REQUEST_METHOD']=='GET'){
 
 $chat_room_id = $_GET['chat_room_id'];
 
 $user_id = $_GET['user_id'];
 
-$message = urldecode($_GET['message']);
-
-$timestamp = $_GET['timestamp'];
-
-
-$split_timestamp = explode(" ", $timestamp);
-
-$split_timestamp = explode("-", $split_timestamp[0]);
-
-$year = $split_timestamp[0] - 2000;
-
-$month = $split_timestamp[1];
-
-$day = $split_timestamp[2];
-
-$message = Encrypt($message, $year, $month, $day);
-
+$message = $_GET['message'];
 
 require_once('init.php');
 
@@ -102,26 +14,29 @@ $result['message'] = array();
 
 $result['user'] = array();
 
-$sql = "INSERT INTO chat_messages (chat_room_id, user_id, message, created_at) values('$chat_room_id', '$user_id', '".addslashes($message)."', '$timestamp')";
+$sql = "INSERT INTO chat_messages (chat_room_id, user_id, message) values('$chat_room_id', '$user_id', '".addslashes($message)."')";
 
 if(mysqli_query($con, $sql)){
 
     $message_id = mysqli_insert_id($con);
 
+	$sql_1 = "SELECT created_at FROM chat_messages WHERE message_id = $message_id";
+
+	$res_1 = mysqli_query($con, $sql_1);
+
+	$row_1 = mysqli_fetch_array($res_1);
+    
     $tmp = array();
     $tmp['message_id'] = $message_id;
     $tmp['chat_room_id'] = $chat_room_id;
     $tmp['message'] = $message;
-    
-    $tmp['message'] = Decrypt($tmp['message'], $year, $month, $day);
-    
-    $tmp['created_at'] = $timestamp;
+    $tmp['created_at'] = $row_1['created_at'];
 
     $result['message'] = $tmp;
 	
 	$user = array();
 	
-	$sql_2 = "SELECT username FROM profile WHERE userid = '$user_id'";
+	$sql_2 = "SELECT username, picture FROM profile WHERE userid = '$user_id'";
 
 	$res_2 = mysqli_query($con, $sql_2);
 
@@ -129,10 +44,11 @@ if(mysqli_query($con, $sql)){
 
 	$user['user_id'] = $user_id;
 	$user['username'] = $row_2['username'];
+	$user['userimage'] = $row_2['picture'];
 	
 	$result['user'] = $user;
 	
-	$sql_3 = "UPDATE chat_rooms SET created_at = '$timestamp' WHERE chat_room_id = '$chat_room_id';";
+	$sql_3 = "UPDATE chat_rooms SET created_at = CURRENT_TIMESTAMP WHERE chat_room_id = '$chat_room_id';";
 
 	$res_3 = mysqli_query($con, $sql_3);
 
@@ -151,7 +67,7 @@ if(mysqli_query($con, $sql)){
     $sql_6 = "UPDATE chat_rooms SET user1_read = 0, user2_read = 1 WHERE chat_room_id = '$chat_room_id';";
 
     else
-    $sql_6 = "SELECT * FROM profile";
+    $sql_6 = "SELECT * FROM likes";
 
     if(mysqli_query($con, $sql_6)){
 	
@@ -169,7 +85,7 @@ if(mysqli_query($con, $sql)){
 
 	$row_7 = mysqli_fetch_array($res_7);
 
-	$push = new Push("FebBook", $row_7['username']. " has sent you a Message !", null);
+	$push = new Push("Febulous", $row_7['username']. " has sent you a Message !", null);
 	 
 	$mPushNotification = $push->getPush(); 
 	

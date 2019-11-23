@@ -40,20 +40,20 @@ require_once('fcmNotFirebase.php');
 
 $push = null; 
 
-$sql_3 = "SELECT username FROM profile WHERE userid = '$uid'";
+$sql_3 = "SELECT username FROM PROFILE WHERE userid = '$uid'";
 
 $res_3 = mysqli_query($con, $sql_3);
 
 $row_3 = mysqli_fetch_array($res_3);
 
-$push = new Push("FebBook", $row_3['username']. " has posted an Event !", null);
+$push = new Push("Febulous", $row_3['username']. " has posted an Event !", null);
  
 $mPushNotification = $push->getPush(); 
 
 
 $devicetoken = array();
 
-$sql_4 = "SELECT device_token FROM profile WHERE userid != '$uid'";
+$sql_4 = "SELECT device_token FROM PROFILE WHERE userid != '$uid'";
 
 $res_4 = mysqli_query($con,$sql_4);
 

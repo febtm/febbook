@@ -58,7 +58,7 @@ $sql_12 = "INSERT INTO notifications (post_id, chat_room_id, post_user_id, notif
 if(mysqli_query($con, $sql_12)) {
 	
 	
-	$push = new Push("FebBook", $row_5['username']. " has sent you a Chat Request !", null);
+	$push = new Push("Febulous", $row_5['username']. " has sent you a Chat Request !", null);
 	 
 	$mPushNotification = $push->getPush(); 
 	
@@ -112,7 +112,7 @@ $sql_111 = "DELETE FROM notifications WHERE chat_room_id = '55555555' AND post_u
 $result_111 = mysqli_query($con, $sql_111);
 
 
-$push = new Push("FebBook", $row_5['username']. " has accepted your Chat Request !", null);
+$push = new Push("Febulous", $row_5['username']. " has accepted your Chat Request !", null);
 
 $mPushNotification = $push->getPush(); 
 
@@ -150,7 +150,7 @@ $sql_22 = "DELETE FROM notifications WHERE chat_room_id = '55555555' AND post_us
 $result_22 = mysqli_query($con, $sql_22);
 
 
-$push = new Push("FebBook", $row_5['username']. " has rejected your Chat Request !", null);
+$push = new Push("Febulous", $row_5['username']. " has rejected your Chat Request !", null);
 
 $mPushNotification = $push->getPush();
 

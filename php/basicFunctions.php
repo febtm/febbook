@@ -64,25 +64,26 @@ $sql_1_2 = "INSERT INTO notifications (post_id, chat_room_id, post_user_id, noti
 if(mysqli_query($con,$sql_1_2)){
 
 
-$push = new Push("FebBook", $row_12['username']. " has commented on your Post !", null);
+$push = new Push("Febulous", $row_12['username']. " has commented on your Post !", null);
 	 
 $mPushNotification = $push->getPush();
 
 
-$sql_13 = "SELECT device_token FROM profile WHERE userid = '$post_user_id'";
+$sql_13 = "SELECT device_token FROM PROFILE WHERE userid = '$post_user_id'";
 
 $res_13 = mysqli_query($con,$sql_13);
 
 $row_13 = mysqli_fetch_array($res_13);
 
 array_push($devicetoken, $row_13['device_token']);
-	
+
+	 
 $firebase = new Firebase(); 
 	 
 $firebase->send($devicetoken, $mPushNotification);
+	
 
 echo "Your Comment has been posted !";
-
 }
 
 else
@@ -120,12 +121,12 @@ $sql_2_2 = "INSERT INTO notifications (post_id, chat_room_id, post_user_id, noti
 if(mysqli_query($con,$sql_2_2)){
 
 
-$push = new Push("FebBook", $row_12['username']. " has liked your Post !", null);
+$push = new Push("Febulous", $row_12['username']. " has liked your Post !", null);
 	 
 $mPushNotification = $push->getPush();
 
 
-$sql_13 = "SELECT device_token FROM profile WHERE userid = '$post_user_id'";
+$sql_13 = "SELECT device_token FROM PROFILE WHERE userid = '$post_user_id'";
 
 $res_13 = mysqli_query($con,$sql_13);
 
@@ -177,12 +178,12 @@ $sql_3_2 = "INSERT INTO notifications (post_id, chat_room_id, post_user_id, noti
 if(mysqli_query($con,$sql_3_2)){
 
 	
-$push = new Push("FebBook", $row_12['username']. " has disliked your Post !", null);
+$push = new Push("Febulous", $row_12['username']. " has disliked your Post !", null);
 	 
 $mPushNotification = $push->getPush();
 
 
-$sql_13 = "SELECT device_token FROM profile WHERE userid = '$post_user_id'";
+$sql_13 = "SELECT device_token FROM PROFILE WHERE userid = '$post_user_id'";
 
 $res_13 = mysqli_query($con,$sql_13);
 

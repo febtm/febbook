@@ -2,17 +2,19 @@
 
 if($_SERVER['REQUEST_METHOD']=='GET'){
 
-$post_id= $_GET['post_id'];
+$post_type= $_GET['post_type'];
+
+$index = $_GET['index'];
 
 require_once('init.php');
 
-$sql = "SELECT pr.username, pr.picture, pr.course, pr.usertype, p.* FROM posts p LEFT JOIN profile pr ON p.user_id = pr.userid WHERE p.post_id = '".$post_id."' ORDER BY p.created_at DESC";
+$sql = "SELECT pr.username, pr.picture, pr.course, pr.usertype, p.* FROM posts p LEFT JOIN profile pr ON p.user_id = pr.userid WHERE p.post_type = '".$post_type."' ORDER BY p.created_at DESC LIMIT $index, 10";
  
 $res = mysqli_query($con,$sql);
  
 $result = array();
 
-$row = mysqli_fetch_array($res);
+while($row = mysqli_fetch_array($res)){
 
 array_push($result,array(	
 	 "post_id"=>$row['post_id'],
@@ -27,6 +29,7 @@ array_push($result,array(
 	 "timestamp"=>$row['created_at'],
 )
 );
+}
  
 echo json_encode(array("result"=>$result));
  

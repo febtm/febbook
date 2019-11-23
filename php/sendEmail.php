@@ -3,19 +3,21 @@
 require_once('init.php');
 
 $method = $_POST['method'];
-$from_email = $_POST['from_email'];
-$to_email = $_POST['to_email'];
+$email = $_POST['email'];
 $subject = $_POST['subject'];
 $message = $_POST['message'];
 
-if($method === "ContactUs"){
-    
-    $headers = 'From: <' . $from_email . '>' . "\r\n" .
-        'Reply-To: <' . $from_email . '>' . "\r\n" .
+$headers = 'From: Febulous <fmt.febulous@gmail.com>' . "\r\n" .
+        'Reply-To: Febulous <fmt.febulous@gmail.com>' . "\r\n" .
         'X-Mailer: PHP/' . phpversion();
+
+
+if($method === "ContactUs"){
 	
-    if(mail($to_email, $subject, $message, $headers))
-		echo "Thank You for your message, kindly wait until our Team responds to it !";
+	$receiver_email = "fmt.febulous@gmail.com";
+
+    if(mail($receiver_email, $subject, $message, $headers))
+		echo "Your Message has been sent : Kindly wait until our Team responds to your Message !";
 	
 	else
 		echo "Sending Email Failed !";
@@ -23,12 +25,10 @@ if($method === "ContactUs"){
 }
 
 else if($method === "RecoverPassword"){
-    
-    $headers = 'From: FebBook <fmt.febulous@gmail.com>' . "\r\n" .
-        'Reply-To: FebBook <fmt.febulous@gmail.com>' . "\r\n" .
-        'X-Mailer: PHP/' . phpversion();
 	
-	$sql = "SELECT username, password FROM profile WHERE email = '".addslashes($to_email)."'";
+	$receiver_email = $email;
+	
+	$sql = "SELECT username, password FROM profile WHERE email = '".addslashes($receiver_email)."'";
 
 	$res = mysqli_query($con, $sql);
 
@@ -45,7 +45,7 @@ else if($method === "RecoverPassword"){
 		$message = str_replace("JOKER", $receiver_password, $message);
 		
 		
-		if(mail($to_email, $subject, $message, $headers))
+		if(mail($receiver_email, $subject, $message, $headers))
 			echo "A recovery email has been sent to your Email-Id !";
 		
 		else

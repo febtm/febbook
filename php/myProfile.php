@@ -28,6 +28,7 @@ array_push($result,array(
 	 "collegename"=>$res1['college'],
 	 "course"=>$res1['course'],
 	 "department"=>$res1['department'],
+	 "usertype"=>$res1['usertype'],
  )
  );
  

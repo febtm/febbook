@@ -8,7 +8,7 @@ $index = $_GET['index'];
 
 require_once('init.php');
 
-$sql = "SELECT pr.username, pr.picture, pr.course, p.* FROM posts p LEFT JOIN profile pr ON p.user_id = pr.userid WHERE pr.username = '".$post_user_name."' ORDER BY p.created_at DESC LIMIT $index, 10";
+$sql = "SELECT pr.username, pr.picture, pr.course, pr.usertype, p.* FROM posts p LEFT JOIN profile pr ON p.user_id = pr.userid WHERE pr.username = '".$post_user_name."' ORDER BY p.created_at DESC LIMIT $index, 10";
  
 $res = mysqli_query($con,$sql);
  
@@ -20,6 +20,8 @@ array_push($result,array(
 	 "post_id"=>$row['post_id'],
 	 "username"=>$row['username'],
 	 "userimage"=>$row['picture'],
+	 "course"=>$row['course'],
+	 "usertype"=>$row['usertype'],
 	 "post_type"=>$row['post_type'],
  	 "post_title"=>$row['post_title'],
 	 "post_image"=>$row['post_image'],	

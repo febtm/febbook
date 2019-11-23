@@ -8,7 +8,7 @@ $searchText = $_GET['searchText'];
 
 require_once('init.php');
 
-$sql = "SELECT username, picture FROM profile WHERE username LIKE '%".addslashes($searchText)."%' OR name LIKE '%".addslashes($searchText)."%' ORDER BY created_at DESC LIMIT $index, 10";
+$sql = "SELECT username, usertype, picture FROM profile WHERE username LIKE '%".addslashes($searchText)."%' OR name LIKE '%".addslashes($searchText)."%' ORDER BY created_at DESC LIMIT $index, 10";
  	
 $res = mysqli_query($con,$sql);
  
@@ -19,6 +19,7 @@ while($row = mysqli_fetch_array($res)){
 array_push($result,array(	
 	 
 	 "username"=>$row['username'],
+	 "usertype"=>$row['usertype'],
  	 "userimage"=>$row['picture'],
 	 
  )
