@@ -1,19 +1,13 @@
 package fmt.febulous.helper;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
@@ -25,12 +19,10 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -51,54 +43,34 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
+import java.util.List;
+import java.util.Locale;
 
 import fmt.febulous.R;
+import fmt.febulous.model.Post;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
 
-//Created by Febin M Thomas on 5/6/16.
-//Updated by Febin M Thomas on 17/5/18.
+
+/**
+ * Created by Febin M Thomas on 5/6/2016.
+ */
 
 public class BasicFunctions {
 
 
-    private static final String BASE_URL = "https://febtech.000webhostapp.com/android_febbook/";
-    public static final String ADD_CHAT = BASE_URL + "addChat.php";
-    private static final String BASIC_FUNCTIONS = BASE_URL + "basicFunctions.php";
-    public static final String CHECK_FILE_EXISTS = BASE_URL + "checkFileExists.php?fileName=";
-    public static final String DELETE_CHAT = BASE_URL + "deleteChat.php";
-    public static final String DELETE_NOTIFICATION = BASE_URL + "deleteNotification.php";
-    public static final String EDIT_PROFILE = BASE_URL + "editProfile.php";
-    public static final String FILE_URL = BASE_URL + "StudyMaterials/";
-    public static final String GET_ALL_CHAT_ROOMS = BASE_URL + "getAllChatRooms.php?user_id=";
-    public static final String GET_ALL_NOTIFICATIONS = BASE_URL + "getAllNotifications.php?current_user_id=";
-    public static final String GET_ALL_POSTS = BASE_URL + "getAllPosts.php?index=";
-    public static final String GET_CHAT_ROOM = BASE_URL + "getChatRoom.php?chat_room_id=";
-    public static final String GET_COMMENTS = BASE_URL + "getComment.php?id=";
-    static final String GET_COUNT = BASE_URL + "getCount.php?user_id=";
-    private static final String GET_CURRENT_USER = BASE_URL + "getCurrentUser.php?email=";
-    public static final String GET_DISLIKES = BASE_URL + "getDislike.php?id=";
-    public static final String GET_LIKES = BASE_URL + "getLike.php?id=";
-    public static final String GET_POST_ID = BASE_URL + "getPostId.php?post_id=";
-    public static final String GET_POST_PROFILE = BASE_URL + "getPostProfile.php?post_user_name=";
-    public static final String LOGIN = BASE_URL + "login.php";
-    static final String LOGOUT = BASE_URL + "logout.php";
-    public static final String MY_PROFILE = BASE_URL + "myProfile.php?username=";
-    public static final String POST = BASE_URL + "post.php";
-    public static final String SEARCH_FOR_POSTS = BASE_URL + "searchForPosts.php?index=";
-    public static final String SEARCH_FOR_PROFILES = BASE_URL + "searchForProfiles.php?index=";
-    private static final String SEND_EMAIL = BASE_URL + "sendEmail.php";
-    public static final String SEND_MESSAGE = BASE_URL + "sendMessage.php?chat_room_id=";
-    public static final String SIGNIN = BASE_URL + "signin.php";
-    public static final String STUDY_MATERIALS = BASE_URL + "studyMaterials.php";
-
     private Context mContext;
-    private RequestQueue mRequestQueue;
+
     private static String today;
 
     public final String KEY_USER_ID = "user_id";
@@ -113,19 +85,21 @@ public class BasicFunctions {
     public final String KEY_USER_GENDER = "gender";
     public final String KEY_USER_COLLEGE = "collegename";
     public final String KEY_USER_COURSE = "course";
+    public final String KEY_USER_TYPE = "usertype";
     public final String KEY_USER_DEPARTMENT = "department";
 
-    final String KEY_NOTIFICATION_COUNT = "notification_count";
-
-    final String KEY_CHAT_COUNT = "chat_count";
+    public final String KEY_NOTIFICATION_COUNT = "notification_count";
+    public final String KEY_CHAT_COUNT = "chat_count";
 
     public final String KEY_POST_COMMENT = "comment";
     public final String KEY_POST_TIMESTAMP = "timestamp";
+
     public final String KEY_POST_ID = "post_id";
     public final String KEY_POST_TITLE = "post_title";
     public final String KEY_POST_TYPE = "post_type";
     public final String KEY_POST_DESC = "post_description";
     public final String KEY_POST_IMAGE = "post_image";
+
     public final String KEY_CHAT_ROOM_ID = "chat_room_id";
     public final String KEY_NOTIFICATION_POST_USERREAD = "post_user_read";
     public final String KEY_NOTIFICATION_USER_ID = "notification_user_id";
@@ -140,39 +114,74 @@ public class BasicFunctions {
     private SharedPreferences LOGIN_PREFERENCE;
     private SharedPreferences.Editor LOGIN_PREF_EDITOR;
     private static final String LOGIN_PREF_NAME = "LOGIN_PREF";
+
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
 
     private SharedPreferences FCM_NOT_PREFERENCE;
     private SharedPreferences.Editor FCM_NOT_PREF_EDITOR;
     private static final String FCM_NOT_PREF_NAME = "FCM_NOT_PREF";
     private static final String FCM_NOT_TOKEN = "FCM_NOT_TOKEN";
+
     private static final int FCM_NOT_SMALL_NOTIFICATION = 235;
 
-    @SuppressLint("CommitPrefEdits")
+    public String[] USERTYPE = new String[]{
+            "USER TYPE",
+            "GENERAL USER",
+            "STUDENT",
+            "TEACHER"
+    };
+
+    public String[] USERCOURSE = new String[]{
+            "COURSE TYPE",
+            "GENERAL",
+            "ENGINEERING",
+            "MEDICINE",
+            "ARTS",
+            "SCIENCE"
+    };
+
+    public String[] POSTLIST = new String[]{
+            "POST TYPE",
+            "GENERAL DIGEST",
+            "Q N A SECTION",
+            "STUDY MATERIALS",
+            "TEACH A TOPIC",
+            "IDEAS GALORE",
+            "EVENTS AND INVITES"
+    };
+
+    public String[] DATELIST = new String[]{
+            "DATE SORT",
+            "EARLIEST TO LATEST",
+            "LATEST TO EARLIEST"
+    };
+
+    public final String POST_TW = "My Post on @fmt_febulous";
+
+    public final String FOUND_TW = "A Post from @fmt_febulous";
+
+
     public BasicFunctions(Context context) {
 
         this.mContext = context;
-
         LOGIN_PREFERENCE = mContext.getSharedPreferences(LOGIN_PREF_NAME, Context.MODE_PRIVATE);
-
         LOGIN_PREF_EDITOR = LOGIN_PREFERENCE.edit();
 
         FCM_NOT_PREFERENCE = mContext.getSharedPreferences(FCM_NOT_PREF_NAME, Context.MODE_PRIVATE);
-
         FCM_NOT_PREF_EDITOR = FCM_NOT_PREFERENCE.edit();
 
         Calendar calendar = Calendar.getInstance();
-
         today = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
 
     }
 
 
-    public void storeFCMNotDeviceToken(String token){
+    public boolean storeFCMNotDeviceToken(String token){
 
         FCM_NOT_PREFERENCE = mContext.getSharedPreferences(FCM_NOT_PREF_NAME, Context.MODE_PRIVATE);
         FCM_NOT_PREF_EDITOR.putString(FCM_NOT_TOKEN, token);
         FCM_NOT_PREF_EDITOR.commit();
+        return true;
 
     }
 
@@ -181,25 +190,6 @@ public class BasicFunctions {
 
         FCM_NOT_PREFERENCE = mContext.getSharedPreferences(FCM_NOT_PREF_NAME, Context.MODE_PRIVATE);
         return  FCM_NOT_PREFERENCE.getString(FCM_NOT_TOKEN, null);
-
-    }
-
-
-    public boolean isAppInstalled(String app_id) {
-
-        PackageManager pm = mContext.getPackageManager();
-
-        try {
-
-            pm.getPackageInfo(app_id, PackageManager.GET_ACTIVITIES);
-            return true;
-
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-
     }
 
 
@@ -213,13 +203,13 @@ public class BasicFunctions {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext, title);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mContext);
         Notification notification;
-        notification = mBuilder.setSmallIcon(R.drawable.me_notifications).setTicker(title).setWhen(0)
+        notification = mBuilder.setSmallIcon(R.drawable.menu_notifications).setTicker(title).setWhen(0)
                 .setAutoCancel(true)
                 .setContentIntent(resultPendingIntent)
                 .setContentTitle(title)
-                .setSmallIcon(R.drawable.me_notifications)
+                .setSmallIcon(R.drawable.menu_notifications)
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.app_logo_main))
                 .setContentText(message)
                 .build();
@@ -227,13 +217,12 @@ public class BasicFunctions {
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
         NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        assert notificationManager != null;
         notificationManager.notify(FCM_NOT_SMALL_NOTIFICATION, notification);
 
         try {
             Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                    + "://" + mContext.getApplicationContext().getPackageName() + "/raw/notification_sound");
-            Ringtone r = RingtoneManager.getRingtone(mContext.getApplicationContext(), alarmSound);
+                    + "://" + Application.getInstance().getApplicationContext().getPackageName() + "/raw/fcm_not_sound");
+            Ringtone r = RingtoneManager.getRingtone(Application.getInstance().getApplicationContext(), alarmSound);
             r.play();
         } catch (Exception e) {
             e.printStackTrace();
@@ -249,7 +238,6 @@ public class BasicFunctions {
         LOGIN_PREF_EDITOR.commit();
 
     }
-
 
     public boolean isLoggedIn(){
         return LOGIN_PREFERENCE.getBoolean(KEY_IS_LOGGED_IN, false);
@@ -268,7 +256,7 @@ public class BasicFunctions {
     }
 
 
-    void setUserDataNull(){
+    public void setUserDataNull(){
 
         String user_email = LOGIN_PREFERENCE.getString(KEY_USER_EMAIL, "");
         String user_password = LOGIN_PREFERENCE.getString(KEY_USER_PASSWORD, "");
@@ -282,13 +270,14 @@ public class BasicFunctions {
         LOGIN_PREF_EDITOR.putString(KEY_USER_PASSWORD, user_password);
 
         LOGIN_PREF_EDITOR.commit();
-
     }
 
 
     public String getUser_id(){ return LOGIN_PREFERENCE.getString(KEY_USER_ID, "");}
 
     public String getUser_name(){ return LOGIN_PREFERENCE.getString(KEY_USER_USERNAME, "");}
+
+    public String getUser_image(){ return LOGIN_PREFERENCE.getString(KEY_USER_IMAGE, "");}
 
     public String getUser_email(){ return LOGIN_PREFERENCE.getString(KEY_USER_EMAIL, "");}
 
@@ -413,7 +402,6 @@ public class BasicFunctions {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            assert connectivityManager != null;
             Network[] networks = connectivityManager.getAllNetworks();
             NetworkInfo networkInfo;
 
@@ -448,54 +436,46 @@ public class BasicFunctions {
     }
 
 
-    @SuppressLint("SimpleDateFormat")
     public static String getTimeStamp(String dateStr) {
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format1.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
         String timestamp = "";
 
         today = today.length() < 2 ? "0" + today : today;
 
         try {
-
             Date date = format1.parse(dateStr);
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
+            cal.add(Calendar.HOUR_OF_DAY, 5);
+            cal.add(Calendar.MINUTE, 30);
 
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat todayFormat = new SimpleDateFormat("dd");
-            todayFormat.setTimeZone(TimeZone.getDefault());
-
+            SimpleDateFormat todayFormat = new SimpleDateFormat("dd", Locale.US);
             String dateToday = todayFormat.format(cal.getTime());
 
             if(dateToday.equals(today))
             {
-                format1 = new SimpleDateFormat("HH:mm");
-                format1.setTimeZone(TimeZone.getDefault());
-
+                format1 = new SimpleDateFormat("hh:mm a", Locale.US);
                 String date1 = format1.format(cal.getTime());
                 timestamp = "Today  ||  "+ date1;
             }
 
             else {
 
-                format1 = new SimpleDateFormat("dd");
-                format1.setTimeZone(TimeZone.getDefault());
+                format1 = new SimpleDateFormat("dd", Locale.US);
                 String date1 = format1.format(cal.getTime());
 
-                format1 = new SimpleDateFormat("MM");
-                format1.setTimeZone(TimeZone.getDefault());
+                format1 = new SimpleDateFormat("MM", Locale.US);
                 String date2 = format1.format(cal.getTime());
 
-                format1 = new SimpleDateFormat("yyyy");
-                format1.setTimeZone(TimeZone.getDefault());
+                format1 = new SimpleDateFormat("yyyy", Locale.US);
                 String date3 = format1.format(cal.getTime());
 
-                format1 = new SimpleDateFormat("HH:mm");
-                format1.setTimeZone(TimeZone.getDefault());
+                format1 = new SimpleDateFormat("hh:mm a", Locale.US);
                 String date4 = format1.format(cal.getTime());
+
 
                 timestamp = date1 + " | " + date2 + " | " + date3
                         + "  ||  " + date4;
@@ -534,51 +514,46 @@ public class BasicFunctions {
     }
 
 
-    public void sendEmail(String from, String from_email, String to_email, String subject, String message) {
+    public void sendEmail(String from, String temp_name, String temp_email, String temp_subject, String temp_message) {
 
-        String temp_subject, temp_message;
+        String subject = "", email = "", message = "", message1, message2, message3, message4, message5;
 
-        switch (from) {
+        if(from.equals("ContactUs")) {
 
-            case "ContactUs":
+            email = temp_email;
 
-                temp_subject = to_email + " : " + subject;
+            subject = temp_name + " : " + temp_subject;
 
-                temp_message = "Application : FebBook" + "\n\nName : " + to_email + "\n\nEmail-Id : " + from_email;
-                temp_message += "\n\nSubject : " + subject + "\n\nMessage : " + message;
+            message1 = "Name : " + temp_name + "\n\nEmail-Id : " + temp_email;
+            message2 = "\n\nSubject : " + temp_subject + "\n\nMessage : " + temp_message;
 
-                to_email = "fmt.febulous@gmail.com";
+            message = message1 + message2;
 
-                subject = temp_subject;
+        }
 
-                message = temp_message;
+        else if(from.equals("RecoverPassword")){
 
-                break;
+            email = temp_email;
 
-            case "RecoverPassword":
+            subject = temp_subject;
 
-                temp_message = "Greetings " + from_email + ",\n\n";
-                temp_message += "We have received a request from your account stating that you have forgotten your password. Kindly find your password below -> ";
-                temp_message += "\n\n" + "Your Password : " + message + "\n\n";
-                temp_message += "If you did not initiate this password request, please contact us at : fmt.febulous@gmail.com to report the issue.";
-                temp_message += "\n\n" + "Regards, \nThe FebBook Team";
+            message1 = "Greetings " + temp_name + ",\n\n\n";
+            message2 = "We have received a request from your account stating that you have forgotten your password. Kindly find your password below -> ";
+            message3 = "\n\n" + "Your Password : " + temp_message + "\n\n";
+            message4 = "If you did not initiate this password request, please contact us at : fmt.febulous@gmail.com to report the issue.";
+            message5 = "\n\n\n" + "Thanks and Regards, \nThe Febulous Team";
 
-                from_email = "fmt.febulous@gmail.com";
-
-                message = temp_message;
-
-                break;
+            message = message1 + message2 + message3 + message4 + message5;
 
         }
 
         SendingEmailBackgroundTask emailBackgroundTask = new SendingEmailBackgroundTask(mContext);
 
-        emailBackgroundTask.execute(from, from_email, to_email, subject, message);
+        emailBackgroundTask.execute(from, email, subject, message);
 
     }
 
 
-    @SuppressLint("StaticFieldLeak")
     private class SendingEmailBackgroundTask extends AsyncTask<String, Void, String> {
 
         private ProgressDialog bf_loading;
@@ -604,14 +579,13 @@ public class BasicFunctions {
         protected String doInBackground(String... params) {
 
             String method = params[0];
-            String from_email = params[1];
-            String to_email = params[2];
-            String subject = params[3];
-            String message = params[4];
+            String email = params[1];
+            String subject = params[2];
+            String message = params[3];
 
             try {
 
-                URL url = new URL(SEND_EMAIL);
+                URL url = new URL(EndPoints.SEND_EMAIL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
@@ -619,8 +593,7 @@ public class BasicFunctions {
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
 
                 data = URLEncoder.encode("method", "UTF-8") + "=" + URLEncoder.encode(method, "UTF-8")
-                        + "&" + URLEncoder.encode("from_email", "UTF-8") + "=" + URLEncoder.encode(from_email, "UTF-8")
-                        + "&" + URLEncoder.encode("to_email", "UTF-8") + "=" + URLEncoder.encode(to_email, "UTF-8")
+                        + "&" + URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8")
                         + "&" + URLEncoder.encode("subject", "UTF-8") + "=" + URLEncoder.encode(subject, "UTF-8")
                         + "&" + URLEncoder.encode("message", "UTF-8") + "=" + URLEncoder.encode(message, "UTF-8");
 
@@ -631,24 +604,24 @@ public class BasicFunctions {
                 InputStream IS = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(IS, "iso-8859-1"));
 
-                StringBuilder response = new StringBuilder();
+                String response = "";
                 String line;
 
                 while ((line = bufferedReader.readLine()) != null) {
-                    response.append(line);
+                    response += line;
                 }
 
                 bufferedReader.close();
                 httpURLConnection.disconnect();
                 IS.close();
 
-                return response.toString();
+                return response;
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            return null;
+        return null;
 
         }
 
@@ -660,51 +633,176 @@ public class BasicFunctions {
         @Override
         protected void onPostExecute(String result) {
 
-            switch (result) {
+            if(result.equals("Your Message has been sent : Kindly wait until our Team responds to your Message !")){
 
-                case "Thank You for your message, kindly wait until our Team responds to it !":
+                Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                bf_loading.dismiss();
 
-                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
-                    bf_loading.dismiss();
+            } else if (result.equals("An Account with this Email-Id does not exist !")) {
 
-                    break;
+                Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                bf_loading.dismiss();
 
-                case "An Account with this Email-Id does not exist !":
+            } else if (result.equals("A recovery email has been sent to your Email-Id !")) {
 
-                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
-                    bf_loading.dismiss();
+                Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                bf_loading.dismiss();
 
-                    break;
+            } else if(result.equals("Sending Email Failed !")){
 
-                case "A recovery email has been sent to your Email-Id !":
+                Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                bf_loading.dismiss();
 
-                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
-                    bf_loading.dismiss();
+            } else {
 
-                    break;
-
-                case "Sending Email Failed !":
-
-                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
-                    bf_loading.dismiss();
-
-                    break;
-
-                default:
-
-                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
-                    bf_loading.dismiss();
-
-                    break;
+                Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                bf_loading.dismiss();
 
             }
         }
     }
 
 
+    public List<Post> doDateSort(List<Post> mPosts, int flag, int total) {
+
+        double arr[] = new double[total];
+
+        for (int i = 0; i < total; i++) {
+
+            Post post = mPosts.get(i);
+            arr[i] = getTimestamp(post.getTempTimestamp());
+
+        }
+
+        if(flag == 0)
+            mPosts = asc_quickSort(mPosts, arr, 0, total - 1);
+
+        else
+            mPosts = desc_quickSort(mPosts, arr, 0, total - 1);
+
+        return mPosts;
+    }
+
+
+    private List<Post> asc_quickSort(List<Post> mPosts, double[] arr, int low, int high) {
+
+        if (arr == null || arr.length == 0)
+            return mPosts;
+
+        if (low >= high)
+            return mPosts;
+
+        int middle = low + (high - low) / 2;
+        double pivot = arr[middle];
+
+        int i = low, j = high;
+        while (i <= j) {
+            while (arr[i] < pivot) {
+                i++;
+            }
+
+            while (arr[j] > pivot) {
+                j--;
+            }
+            if (i <= j) {
+                double temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+
+                mPosts = setValues(mPosts, i, j);
+
+                i++;
+                j--;
+            }
+        }
+
+        if (low < j)
+            mPosts = asc_quickSort(mPosts, arr, low, j);
+
+        if (high > i)
+            mPosts = asc_quickSort(mPosts, arr, i, high);
+
+        return mPosts;
+    }
+
+
+    private List<Post> desc_quickSort(List<Post> mPosts, double[] arr, int low, int high) {
+
+        if (arr == null || arr.length == 0)
+            return mPosts;
+
+        if (low >= high)
+            return mPosts;
+
+        int middle = low + (high - low) / 2;
+        double pivot = arr[middle];
+
+        int i = low, j = high;
+        while (i <= j) {
+            while (arr[i] > pivot) {
+                i++;
+            }
+            while (arr[j] < pivot) {
+                j--;
+            }
+
+            if (i <= j) {
+                double temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+                mPosts = setValues(mPosts, i, j);
+                i++;
+                j--;
+            }
+        }
+
+        if (low < j)
+            mPosts = desc_quickSort(mPosts, arr, low, j);
+
+        if (high > i)
+            mPosts = desc_quickSort(mPosts, arr, i, high);
+
+        return mPosts;
+
+    }
+
+
+    private List<Post> setValues(List<Post> mPosts, int i, int j) {
+
+        Post post_temp = mPosts.get(i);
+
+        mPosts.set(i, mPosts.get(j));
+
+        mPosts.set(j, post_temp);
+
+        return mPosts;
+
+    }
+
+    private double getTimestamp(String str) {
+
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+
+        Timestamp timestamp = null;
+
+        try {
+
+            Date parsedDate = format1.parse(str);
+
+            timestamp = new Timestamp(parsedDate.getTime());
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return timestamp.getTime();
+
+    }
+
+
     public void getCurrentUserData(String email) {
 
-        String url = BasicFunctions.GET_CURRENT_USER + email;
+        String url = EndPoints.GET_CURRENT_USER + email;
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
@@ -753,20 +851,6 @@ public class BasicFunctions {
 
     }
 
-    private RequestQueue getRequestQueue() {
-
-        if (mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
-        }
-
-        return mRequestQueue;
-    }
-
-    public <T> void addToRequestQueue(Request<T> req) {
-
-        getRequestQueue().add(req);
-
-    }
 
     public void performTask(String method, String item_id, String item_title){
 
@@ -775,7 +859,6 @@ public class BasicFunctions {
 
     }
 
-    @SuppressLint("StaticFieldLeak")
     private class PerformTaskBackgroundTask extends AsyncTask<String, Void, String> {
 
         Context ctx;
@@ -807,7 +890,7 @@ public class BasicFunctions {
 
             try {
 
-                URL url = new URL(BasicFunctions.BASIC_FUNCTIONS);
+                URL url = new URL(EndPoints.BASIC_FUNCTIONS);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
@@ -826,18 +909,18 @@ public class BasicFunctions {
                 InputStream IS = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(IS,"iso-8859-1"));
 
-                StringBuilder response = new StringBuilder();
+                String response = "";
                 String line;
 
                 while((line = bufferedReader.readLine())!=null)  {
-                    response.append(line);
+                    response += line;
                 }
 
                 bufferedReader.close();
                 httpURLConnection.disconnect();
                 IS.close();
 
-                return response.toString();
+                return response;
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -878,14 +961,14 @@ public class BasicFunctions {
 
                     break;
 
-                case "You have liked this Post !":
+                case "You have liked this post !":
 
                     Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
                     pDialog.dismiss();
 
                     break;
 
-                case "You have disliked this Post !":
+                case "You have disliked this post !":
 
                     Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
                     pDialog.dismiss();

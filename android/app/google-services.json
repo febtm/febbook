@@ -15,23 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "753593351142-tukcdmkhk35dnc48t7gp28bn74aal224.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "fmt.febulous",
-            "certificate_hash": "28e67941af81c2cfe9f97f20ee93174b8a256f8a"
-          }
+          "client_id": "753593351142-mrt83vkrkadrjtogt6f61q5j2ik9e1km.apps.googleusercontent.com",
+          "client_type": 3
         },
         {
-          "client_id": "753593351142-tljkoc1dn4g4nmlno82qf966d6jjbr6h.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "fmt.febulous",
-            "certificate_hash": "bc2805c03f55bce46acfa1a412a03e8e21a43ebd"
-          }
-        },
-        {
-          "client_id": "753593351142-0e8jscsokt8e5rmaom8c7qmhv24rt235.apps.googleusercontent.com",
+          "client_id": "753593351142-o632cnc5gs5k7g7rja3q9pl48ghrvige.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "fmt.febulous",
@@ -39,21 +27,13 @@
           }
         },
         {
-          "client_id": "753593351142-nr9pvvqio7nsq202gi0onr5tq4rrmcbo.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "fmt.febulous",
-            "certificate_hash": "40a4f1886c664af7c18409ba01295d604140f22d"
-          }
-        },
-        {
-          "client_id": "753593351142-su804olcggmbuc0okc064su3tuv4nkco.apps.googleusercontent.com",
+          "client_id": "753593351142-hrp32hpljo61a4tatmp1r2k3enbcnea6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC7a-CNkcFg1ZHNgPOG6vLKfkroatk5CbI"
+          "current_key": "AIzaSyB0_Nrd9TptfvA595hf4JK2gkDwnwA_g1g"
         }
       ],
       "services": {
@@ -67,7 +47,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "753593351142-su804olcggmbuc0okc064su3tuv4nkco.apps.googleusercontent.com",
+              "client_id": "753593351142-mrt83vkrkadrjtogt6f61q5j2ik9e1km.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

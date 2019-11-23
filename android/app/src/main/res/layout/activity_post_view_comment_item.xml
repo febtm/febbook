@@ -3,29 +3,32 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorSecondaryTransparent77"
+    android:layout_margin="5dp"
     android:orientation="vertical">
 
     <ImageButton
         android:id="@+id/pv_delete"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:contentDescription="@null"
         android:layout_gravity="end"
         android:visibility="visible"
-        android:background="@drawable/app_cancel"/>
+        android:background="@drawable/app_delete_on"/>
 
     <LinearLayout
+        android:id="@+id/pv_list_item_LL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_margin="5dp">
+        android:layout_margin="5dp"
+        android:background="@color/colorSecondary"
+        >
 
             <LinearLayout
-                android:id="@+id/pv_user_profile"
+                android:id="@+id/pv_userprofile"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -36,7 +39,8 @@
                 android:id="@+id/pv_list_item_userimage"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                />
 
                 <TextView
                     android:id="@+id/pv_list_item_username"
@@ -46,7 +50,7 @@
                     android:textSize="14sp"
                     android:text="@string/username"
                     android:textStyle="bold"
-                    android:textColor="@color/colorSecondary"
+                    android:textColor="@color/colorPrimary"
                     android:layout_marginTop="5dp"/>
 
             </LinearLayout>
@@ -55,7 +59,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_gravity="start">
+            android:layout_gravity="start"
+            android:background="@drawable/item_blue_border"
+            >
 
                 <TextView
                     android:id="@+id/pv_list_item_comment"
@@ -64,6 +70,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
                     android:autoLink="web"
+                    android:background="@color/colorSecondary"
                     android:textColor="@color/colorPrimary"
                     android:textStyle="bold"
                     android:text="@string/title" />
@@ -76,7 +83,8 @@
             android:id="@+id/pv_list_item_date"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textColor="@color/colorQuaternary"
+            android:background="@color/colorSecondary"
+            android:textColor="@color/colorEvents"
             android:text="@string/timestamp"
             android:gravity="end"
             android:layout_marginEnd="5dp"
@@ -87,17 +95,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp">
+        android:layout_marginBottom="5dp"
+        android:background="@color/colorSecondary">
 
         <TextView
             android:id="@+id/pv_report"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/pv_report_comment"
+            android:text="@string/post_view_report_comment"
             android:textSize="12sp"
             android:layout_gravity="end"
-            android:textColor="@color/colorPrimaryDark"
-            android:visibility="visible" />
+            android:textColor="@color/colorTertiary"
+            android:visibility="visible"
+            android:background="@color/colorSecondary" />
 
     </FrameLayout>
 

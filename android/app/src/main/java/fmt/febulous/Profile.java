@@ -1,6 +1,5 @@
 package fmt.febulous;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,14 +8,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -24,14 +20,14 @@ import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +37,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.pkmmte.view.CircularImageView;
@@ -63,32 +58,29 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import fmt.febulous.helper.BasicFunctions;
-import fmt.febulous.helper.Menu;
+import fmt.febulous.helper.EndPoints;
 import fmt.febulous.helper.ViewImage;
-import fmt.febulous.model.Post;
-
-import static android.view.View.GONE;
 
 
-public class Profile extends AppCompatActivity {
+public class Profile extends AppCompatActivity
+    implements ProfileFragment.onMyprofileFragmentItemSelected {
 
 
     JSONArray SearchProfileArray = null;
 
-    private TextView P_USERNAME, P_ABOUT, P_NAME, P_DATE, P_EMAIL, P_GENDER,
-            P_COURSE, P_DEPARTMENT, P_COLLEGE;
+    private TextView MP_USERNAME, MP_ABOUT, MP_NAME, MP_DATE, MP_EMAIL, MP_GENDER,
+            MP_COURSE, MP_USERTYPE, MP_DEPARTMENT, MP_COLLEGE;
 
-    private ImageView P_COVER;
+    private ImageView MP_COVER;
 
-    Button P_CONTACT, P_REPORT;
+    Button MP_CONTACT, MP_REPORT;
 
-    private CircularImageView P_USERIMAGE;
+    private CircularImageView MP_USERIMAGE;
 
-    private String p_userid = "", p_username = "", p_userimage = "", p_usercover = "";
+    private String mp_userid = "", mp_username = "", mp_userimage = "", mp_usercover = "";
 
     EditText ET_SEARCH;
 
@@ -103,88 +95,78 @@ public class Profile extends AppCompatActivity {
 
     public static String PROFILE_USERNAME;
 
-    private Menu menu;
-
-    ImageButton MENU_BUTTON, SEARCH_CANCEL;
-
-    JSONArray AllProfilePostsArray = null;
-
-    public List<Post> mProfilePosts = new ArrayList<>();
-
-    private MyProfilePostsAdapter myProfilePostsAdapter;
-
-    FloatingActionButton P_FA_EDIT_PROFILE, P_FA_VIEW_PROFILE, P_FA_VIEW_POSTS;
-
-    private ScrollView MP_SCROLL;
-
     private BasicFunctions basicFunctions;
-
-    private Post post;
-
-    private RecyclerView recyclerView;
 
     private ProgressDialog pDialog;
 
-    private int load_over = 0, show = 0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        AdView mAdView = findViewById(R.id.p_adView);
+        AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-        menu = new Menu(Profile.this);
+            Window window = this.getWindow();
 
-        MENU_BUTTON = findViewById(R.id.p_menu);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-        MENU_BUTTON.setOnClickListener(new View.OnClickListener() {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
+        }
+
+        ImageButton leftMenuBtn = (ImageButton) findViewById(R.id.mp_left_menu_btn);
+
+        leftMenuBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                menu.LeftDrawer.toggleLeftDrawer();
+
+                Intent intent = new Intent(Profile.this, HomePage.class);
+                startActivity(intent);
 
             }
         });
 
+        ImageButton rightMenuBtn = (ImageButton) findViewById(R.id.mp_right_menu_btn);
 
-        P_FA_EDIT_PROFILE = findViewById(R.id.p_fa_edit_profile);
-        P_FA_VIEW_PROFILE = findViewById(R.id.p_fa_view_profile);
-        P_FA_VIEW_POSTS = findViewById(R.id.p_fa_view_posts);
-
-        P_COVER = findViewById(R.id.p_user_cover);
-        P_USERNAME = findViewById(R.id.p_username_text);
-        P_ABOUT = findViewById(R.id.p_user_about_text);
-        P_NAME = findViewById(R.id.p_name_text);
-        P_DATE = findViewById(R.id.p_dob_text);
-        P_GENDER = findViewById(R.id.p_gender_text);
-        P_EMAIL = findViewById(R.id.p_email_text);
-        P_COURSE = findViewById(R.id.p_course_text);
-        P_DEPARTMENT = findViewById(R.id.p_department_text);
-        P_COLLEGE = findViewById(R.id.p_college_name_text);
-        P_USERIMAGE = findViewById(R.id.p_user_image);
-
-        P_CONTACT = findViewById(R.id.p_contact_user);
-        P_REPORT = findViewById(R.id.p_report_user);
-
-        search_list = findViewById(R.id.p_search_list);
-        search_list.setVisibility(GONE);
-
-        ET_SEARCH = findViewById(R.id.p_search_bar);
-
-        SEARCH_CANCEL = findViewById(R.id.p_search_cancel);
-
-        SEARCH_CANCEL.setOnClickListener(new View.OnClickListener() {
+        rightMenuBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
 
-                ET_SEARCH.setText("");
-
+                Intent intent = new Intent(Profile.this, ModifyProfile.class);
+                startActivity(intent);
             }
         });
+
+
+        MP_COVER = (ImageView) findViewById(R.id.mp_usercover);
+        MP_USERNAME = (TextView) findViewById(R.id.mp_usernametext);
+        MP_ABOUT = (TextView) findViewById(R.id.mp_userabouttext);
+        MP_NAME = (TextView) findViewById(R.id.mp_nametext);
+        MP_DATE = (TextView) findViewById(R.id.mp_dobtext);
+        MP_GENDER = (TextView) findViewById(R.id.mp_gendertext);
+        MP_EMAIL = (TextView) findViewById(R.id.mp_emailtext);
+        MP_COURSE = (TextView) findViewById(R.id.mp_coursetext);
+        MP_USERTYPE = (TextView) findViewById(R.id.mp_educationaldetailstext);
+        MP_DEPARTMENT = (TextView) findViewById(R.id.mp_departmenttext);
+        MP_COLLEGE = (TextView) findViewById(R.id.mp_collegenametext);
+        MP_USERIMAGE = (CircularImageView) findViewById(R.id.mp_userimage);
+
+        MP_CONTACT = (Button) findViewById(R.id.mp_contactuser);
+        MP_REPORT = (Button) findViewById(R.id.mp_reportuser);
+
+        search_list = (ListView) findViewById(R.id.mp_search_list);
+        search_list.setVisibility(View.GONE);
+
+        ET_SEARCH = (EditText) findViewById(R.id.mp_search_bar);
 
         basicFunctions = new BasicFunctions(this);
 
@@ -193,23 +175,23 @@ public class Profile extends AppCompatActivity {
 
         if(TYPE.equals("SELF")) {
             PROFILE_USERNAME = basicFunctions.getUser_name();
-            P_CONTACT.setVisibility(GONE);
-            P_REPORT.setVisibility(GONE);
+            MP_CONTACT.setVisibility(View.GONE);
+            MP_REPORT.setVisibility(View.GONE);
         }
 
         else if(basicFunctions.getUser_name().equals(TYPE)){
             PROFILE_USERNAME = TYPE;
-            P_CONTACT.setVisibility(GONE);
-            P_REPORT.setVisibility(GONE);
+            MP_CONTACT.setVisibility(View.GONE);
+            MP_REPORT.setVisibility(View.GONE);
         }
 
         else {
             PROFILE_USERNAME = TYPE;
-            P_CONTACT.setVisibility(View.VISIBLE);
-            P_REPORT.setVisibility(View.VISIBLE);
+            MP_CONTACT.setVisibility(View.VISIBLE);
+            MP_REPORT.setVisibility(View.VISIBLE);
         }
 
-        P_CONTACT.setOnClickListener(new View.OnClickListener() {
+        MP_CONTACT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -218,7 +200,7 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        P_REPORT.setOnClickListener(new View.OnClickListener() {
+        MP_REPORT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -226,25 +208,16 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        MP_SCROLL = findViewById(R.id.p_user_info_scrollview);
 
-        MP_SCROLL.setVisibility(View.VISIBLE);
-
-        post = new Post();
-
-        recyclerView = findViewById(R.id.p_recycler_view);
-
-        recyclerView.setVisibility(GONE);
-
-        P_USERIMAGE.setOnClickListener(new View.OnClickListener() {
+        MP_USERIMAGE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Intent intent = new Intent(Profile.this, ViewImage.class);
 
-                if(!p_userimage.equals("")) {
+                if(!mp_userimage.equals("")) {
 
-                    byte[] decodedString = Base64.decode(p_userimage, Base64.DEFAULT);
+                    byte[] decodedString = Base64.decode(mp_userimage, Base64.DEFAULT);
                     Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
                     intent.putExtra("image", "large_image");
@@ -273,15 +246,15 @@ public class Profile extends AppCompatActivity {
         });
 
 
-        P_COVER.setOnClickListener(new View.OnClickListener() {
+        MP_COVER.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Intent intent = new Intent(Profile.this, ViewImage.class);
 
-                if(!p_usercover.equals("")) {
+                if(!mp_usercover.equals("")) {
 
-                    byte[] decodedString = Base64.decode(p_usercover, Base64.DEFAULT);
+                    byte[] decodedString = Base64.decode(mp_usercover, Base64.DEFAULT);
                     Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
                     intent.putExtra("image", "large_image");
@@ -310,46 +283,19 @@ public class Profile extends AppCompatActivity {
         });
 
 
-        if(basicFunctions.isConnectingToInternet()) {
+        if(basicFunctions.isConnectingToInternet())
+            myprofile();
 
-            fetchProfile();
-
-        }
-        else {
+        else{
 
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which){
-
                         case DialogInterface.BUTTON_POSITIVE:
 
-                            if(basicFunctions.isConnectingToInternet()) {
-
-                                fetchProfile();
-                                getInitialProfilePostsData();
-
-                            }
-
-                            else {
-
-                                Toast.makeText(Profile.this,
-                                        "No Internet Connection. Try again later !",
-                                        Toast.LENGTH_LONG).show();
-
-                                dialog.dismiss();
-
-                            }
-
-                            break;
-
-                        case DialogInterface.BUTTON_NEGATIVE:
-
-                            Toast.makeText(Profile.this,
-                                    "No Internet Connection. Try again later !",
-                                    Toast.LENGTH_LONG).show();
-
-                            dialog.dismiss();
+                            Intent intent = new Intent(Profile.this, HomePage.class);
+                            startActivity(intent);
 
                             break;
 
@@ -357,13 +303,11 @@ public class Profile extends AppCompatActivity {
                 }
             };
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
-            builder.setMessage("No Internet Connection. Try again ?")
-                    .setPositiveButton("Yes", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Network Failure : Please check your Internet Connection !")
+                    .setPositiveButton("Try Again ... ", dialogClickListener).show();
 
         }
-
 
         ET_SEARCH.addTextChangedListener(new TextWatcher() {
 
@@ -373,18 +317,13 @@ public class Profile extends AppCompatActivity {
 
                 searchText = ET_SEARCH.getText().toString().toLowerCase(Locale.getDefault());
 
-                if (TextUtils.isEmpty(searchText)) {
-
-                    search_list.setVisibility(GONE);
-                    recyclerView.setVisibility(GONE);
-                    MP_SCROLL.setVisibility(View.VISIBLE);
-
-                }
+                if (TextUtils.isEmpty(searchText))
+                    search_list.setVisibility(View.GONE);
 
                 else {
 
                     searcharraylist.clear();
-                    searchProfiles(searchText, 0);
+                    searchData(searchText, 0);
 
                 }
             }
@@ -402,54 +341,25 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        P_FA_EDIT_PROFILE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent intent = new Intent(Profile.this, EditProfile.class);
-                startActivity(intent);
-
-            }
-        });
-
-        P_FA_VIEW_POSTS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                MP_SCROLL.setVisibility(GONE);
-                search_list.setVisibility(GONE);
-                recyclerView.setVisibility(View.VISIBLE);
-
-                if(show == 0) {
-
-                    getInitialProfilePostsData();
-                    show = 1;
-
-                }
-
-            }
-        });
-
-        P_FA_VIEW_PROFILE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                MP_SCROLL.setVisibility(View.VISIBLE);
-                search_list.setVisibility(GONE);
-                recyclerView.setVisibility(View.GONE);
-
-            }
-        });
-
 
     }
 
 
-    private void fetchProfile() {
+    @Override
+    public void onMyProfileFragmentItemSelected(String id) {
+
+            Intent intent = new Intent(Profile.this, PostView.class);
+            intent.putExtra("id", id);
+            startActivity(intent);
+
+    }
+
+
+    private void myprofile() {
 
         pDialog = ProgressDialog.show(this, "", "Fetching Profile ... ", false, false);
 
-        StringRequest stringRequest = new StringRequest(BasicFunctions.MY_PROFILE+PROFILE_USERNAME, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(EndPoints.MY_PROFILE+PROFILE_USERNAME, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
@@ -477,14 +387,15 @@ public class Profile extends AppCompatActivity {
 
     private void showJSON_Profile(String response) {
 
-        String p_userabout = "";
-        String p_email = "";
-        String p_name = "";
-        String p_gender = "";
-        String p_date = "";
-        String p_college = "";
-        String p_department = "";
-        String p_course = "";
+        String mp_userabout = "";
+        String mp_email = "";
+        String mp_name = "";
+        String mp_gender = "";
+        String mp_date = "";
+        String mp_college = "";
+        String mp_usertype = "";
+        String mp_department = "";
+        String mp_course = "";
 
 
         try {
@@ -493,18 +404,19 @@ public class Profile extends AppCompatActivity {
             JSONArray result = jsonObject.getJSONArray(basicFunctions.JSON_ARRAY);
             JSONObject profileData = result.getJSONObject(0);
 
-            p_userid = profileData.getString(basicFunctions.KEY_USER_ID);
-            p_username = profileData.getString(basicFunctions.KEY_USER_USERNAME);
-            p_userimage = profileData.getString(basicFunctions.KEY_USER_IMAGE);
-            p_userabout = profileData.getString(basicFunctions.KEY_USER_ABOUT);
-            p_email = profileData.getString(basicFunctions.KEY_USER_EMAIL);
-            p_name = profileData.getString(basicFunctions.KEY_USER_NAME);
-            p_date = profileData.getString(basicFunctions.KEY_USER_DOB);
-            p_usercover = profileData.getString(basicFunctions.KEY_USER_COVERIMAGE);
-            p_gender = profileData.getString(basicFunctions.KEY_USER_GENDER);
-            p_college = profileData.getString(basicFunctions.KEY_USER_COLLEGE);
-            p_department = profileData.getString(basicFunctions.KEY_USER_DEPARTMENT);
-            p_course = profileData.getString(basicFunctions.KEY_USER_COURSE);
+            mp_userid = profileData.getString(basicFunctions.KEY_USER_ID);
+            mp_username = profileData.getString(basicFunctions.KEY_USER_USERNAME);
+            mp_userimage = profileData.getString(basicFunctions.KEY_USER_IMAGE);
+            mp_userabout = profileData.getString(basicFunctions.KEY_USER_ABOUT);
+            mp_email = profileData.getString(basicFunctions.KEY_USER_EMAIL);
+            mp_name = profileData.getString(basicFunctions.KEY_USER_NAME);
+            mp_date = profileData.getString(basicFunctions.KEY_USER_DOB);
+            mp_usercover = profileData.getString(basicFunctions.KEY_USER_COVERIMAGE);
+            mp_gender = profileData.getString(basicFunctions.KEY_USER_GENDER);
+            mp_college = profileData.getString(basicFunctions.KEY_USER_COLLEGE);
+            mp_usertype = profileData.getString(basicFunctions.KEY_USER_TYPE);
+            mp_department = profileData.getString(basicFunctions.KEY_USER_DEPARTMENT);
+            mp_course = profileData.getString(basicFunctions.KEY_USER_COURSE);
 
 
         } catch (JSONException e) {
@@ -512,91 +424,103 @@ public class Profile extends AppCompatActivity {
         }
 
 
-        P_USERNAME.setText(p_username);
-        P_EMAIL.setText(p_email);
-        P_COURSE.setText(p_course);
+        MP_USERNAME.setText(mp_username);
+        MP_EMAIL.setText(mp_email);
+        MP_COURSE.setText(mp_course);
 
-        if(!p_userabout.equals("")) P_ABOUT.setText(p_userabout);
+        String ut = mp_usertype.toUpperCase() + "'S DETAILS";
 
-        else P_ABOUT.setText("-");
+        MP_USERTYPE.setText(ut);
 
-        if(!p_name.equals("")) P_NAME.setText(p_name);
+        if(!mp_userabout.equals("")) MP_ABOUT.setText(mp_userabout);
 
-        else P_NAME.setText("-");
+        else MP_ABOUT.setText("-");
 
-        if(!p_gender.equals("")) {
+        if(!mp_name.equals("")) MP_NAME.setText(mp_name);
 
-            if (p_gender.equals("M"))
-                P_GENDER.setText(getResources().getString(R.string.male));
+        else MP_NAME.setText("-");
 
-            else if (p_gender.equals("F"))
-                P_GENDER.setText(getResources().getString(R.string.female));
+
+        if(!mp_gender.equals("")) {
+
+            if (mp_gender.equals("M"))
+                MP_GENDER.setText(getResources().getString(R.string.male));
+
+            else if (mp_gender.equals("F"))
+                MP_GENDER.setText(getResources().getString(R.string.female));
 
         }
 
-        else P_GENDER.setText("-");
+        else MP_GENDER.setText("-");
 
 
-        if(!p_date.equals("")) P_DATE.setText(p_date);
+        if(!mp_date.equals("")) MP_DATE.setText(mp_date);
 
-        else P_DATE.setText("-");
-
-
-        if(!p_department.equals("")) P_DEPARTMENT.setText(p_department);
-
-        else P_DEPARTMENT.setText("-");
+        else MP_DATE.setText("-");
 
 
-        if(!p_college.equals("")) P_COLLEGE.setText(p_college);
+        if(!mp_department.equals("")) MP_DEPARTMENT.setText(mp_department);
 
-        else P_COLLEGE.setText("-");
+        else MP_DEPARTMENT.setText("-");
 
 
-        if(!p_userimage.equals("")) {
+        if(!mp_college.equals("")) MP_COLLEGE.setText(mp_college);
 
-            P_USERIMAGE.setBackground(null);
-            byte[] decodedString_1 = Base64.decode(p_userimage, Base64.DEFAULT);
+        else MP_COLLEGE.setText("-");
+
+
+        if(!mp_userimage.equals("")) {
+
+            MP_USERIMAGE.setBackground(null);
+            byte[] decodedString_1 = Base64.decode(mp_userimage, Base64.DEFAULT);
             Bitmap decodedByte_1 = BitmapFactory.decodeByteArray(decodedString_1, 0, decodedString_1.length);
 
-            P_USERIMAGE.setImageBitmap(decodedByte_1);
+            MP_USERIMAGE.setImageBitmap(decodedByte_1);
 
         }
 
         else {
 
-            P_USERIMAGE.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.app_userimage, null));
-            P_USERIMAGE.setImageResource(R.drawable.app_userbackground);
+            MP_USERIMAGE.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.app_userimage, null));
+            MP_USERIMAGE.setImageResource(R.drawable.app_userbackground);
 
         }
 
 
-        if(!p_usercover.equals("")) {
+        if(!mp_usercover.equals("")) {
 
-            P_COVER.setBackground(null);
-            byte[] decodedString_2 = Base64.decode(p_usercover, Base64.DEFAULT);
+            MP_COVER.setBackground(null);
+            byte[] decodedString_2 = Base64.decode(mp_usercover, Base64.DEFAULT);
             Bitmap decodedByte_2 = BitmapFactory.decodeByteArray(decodedString_2, 0, decodedString_2.length);
 
-            P_COVER.setImageBitmap(decodedByte_2);
+            MP_COVER.setImageBitmap(decodedByte_2);
 
         }
 
         else {
 
-            P_COVER.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.mp_usercover, null));
-            P_COVER.setImageResource(R.drawable.app_userbackground);
+            MP_COVER.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.mp_usercover, null));
+            MP_COVER.setImageResource(R.drawable.app_userbackground);
 
         }
+
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mp_root_layout, ProfileFragment.newInstance(), "PostList")
+                .commit();
+
 
         pDialog.dismiss();
 
     }
 
 
-    private void searchProfiles(String searchText, final int index) {
+    private void searchData(String searchText, final int index) {
 
         pDialog = ProgressDialog.show(this, "", "Fetching Profiles ... ", false, false);
 
-        String url = BasicFunctions.SEARCH_FOR_PROFILES + index + "&searchText=" + searchText;
+        String url = EndPoints.SEARCH_FOR_PROFILES + index + "&searchText=" + searchText;
 
         url = url.replaceAll(" ", "%20");
 
@@ -611,23 +535,7 @@ public class Profile extends AppCompatActivity {
 
                     if (index == 0 && SearchProfileArray.length() == 0) {
 
-                        search_list.setVisibility(GONE);
-
-                        if(show == 0) {
-
-                            recyclerView.setVisibility(GONE);
-                            MP_SCROLL.setVisibility(View.VISIBLE);
-
-                        }
-
-                        else {
-
-                            recyclerView.setVisibility(View.VISIBLE);
-                            MP_SCROLL.setVisibility(View.GONE);
-
-                        }
-
-
+                        search_list.setVisibility(View.GONE);
                         Toast.makeText(Profile.this, "No Profiles Found !", Toast.LENGTH_LONG).show();
 
                     }
@@ -635,20 +543,17 @@ public class Profile extends AppCompatActivity {
                     else if(SearchProfileArray.length() == 0)
                         Toast.makeText(Profile.this, "No More Profiles Found !", Toast.LENGTH_LONG).show();
 
-                    else {
-
+                    else
                         search_list.setVisibility(View.VISIBLE);
-                        recyclerView.setVisibility(GONE);
-                        MP_SCROLL.setVisibility(View.GONE);
 
-                    }
 
                     for (int i = 0; i < SearchProfileArray.length(); i++) {
 
                         JSONObject jsonObject = SearchProfileArray.getJSONObject(i);
 
                         ItemList itemList = new ItemList(jsonObject.getString(basicFunctions.KEY_USER_USERNAME),
-                                jsonObject.getString(basicFunctions.KEY_USER_IMAGE) );
+                                jsonObject.getString(basicFunctions.KEY_USER_IMAGE),
+                                jsonObject.getString(basicFunctions.KEY_USER_TYPE));
 
                         searcharraylist.add(itemList);
 
@@ -716,7 +621,6 @@ public class Profile extends AppCompatActivity {
 
 
 
-    @SuppressLint("StaticFieldLeak")
     private class ChatBackgroundTask extends AsyncTask<String, Void, String> {
 
         Context ctx;
@@ -738,14 +642,16 @@ public class Profile extends AppCompatActivity {
                 String current_user_id = params[1];
                 String user_id = params[2];
 
+
                 try {
 
-                    URL url = new URL(BasicFunctions.ADD_CHAT);
+                    URL url = new URL(EndPoints.ADD_CHAT);
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     httpURLConnection.setRequestMethod("POST");
                     httpURLConnection.setDoOutput(true);
                     OutputStream OS = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
+
 
                     data = URLEncoder.encode("method", "UTF-8") + "=" + URLEncoder.encode(method, "UTF-8")
                             + "&" + URLEncoder.encode("current_user_id", "UTF-8") + "=" + URLEncoder.encode(current_user_id, "UTF-8")
@@ -758,17 +664,17 @@ public class Profile extends AppCompatActivity {
                     InputStream IS = httpURLConnection.getInputStream();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(IS, "iso-8859-1"));
 
-                    StringBuilder response = new StringBuilder();
+                    String response = "";
                     String line;
 
                     while ((line = bufferedReader.readLine()) != null) {
-                        response.append(line);
+                        response += line;
                     }
                     bufferedReader.close();
                     httpURLConnection.disconnect();
                     IS.close();
 
-                    return response.toString();
+                    return response;
 
 
                 } catch (IOException e) {
@@ -779,10 +685,12 @@ public class Profile extends AppCompatActivity {
 
         }
 
+
         @Override
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
         }
+
 
         @Override
         protected void onPostExecute(String result) {
@@ -817,7 +725,7 @@ public class Profile extends AppCompatActivity {
 
         ChatBackgroundTask backgroundTask = new ChatBackgroundTask(this);
 
-        backgroundTask.execute(method, basicFunctions.getUser_id(), p_userid);
+        backgroundTask.execute(method, basicFunctions.getUser_id(), mp_userid);
 
     }
 
@@ -827,9 +735,8 @@ public class Profile extends AppCompatActivity {
         Intent intent = new Intent(Profile.this, MessengerItem.class);
 
         intent.putExtra("chat_room_id", chat_room_id);
-        intent.putExtra("userid", p_userid);
-        intent.putExtra("username", p_username);
-        intent.putExtra("userimage", p_userimage);
+        intent.putExtra("userid", mp_userid);
+        intent.putExtra("username", mp_username);
 
         startActivity(intent);
 
@@ -851,6 +758,7 @@ public class Profile extends AppCompatActivity {
         private class ViewHolder {
 
             TextView TV_USERNAME;
+            TextView TV_USERTYPE;
             CircularImageView IV_USERIMAGE;
             Button B_SHOW_MORE;
 
@@ -879,11 +787,12 @@ public class Profile extends AppCompatActivity {
             if (view == null) {
 
                 holder = new ViewHolder();
-                view = inflater.inflate(R.layout.activity_hp_search_item, parent, false);
+                view = inflater.inflate(R.layout.activity_homepage_search_list_item, parent, false);
 
-                holder.TV_USERNAME = view.findViewById(R.id.hp_search_title);
-                holder.IV_USERIMAGE = view.findViewById(R.id.hp_search_image);
-                holder.B_SHOW_MORE = view.findViewById(R.id.hp_search_more);
+                holder.TV_USERNAME = (TextView) view.findViewById(R.id.hp_search_list_title);
+                holder.TV_USERTYPE = (TextView) view.findViewById(R.id.hp_search_list_type);
+                holder.IV_USERIMAGE = (CircularImageView) view.findViewById(R.id.hp_search_list_image);
+                holder.B_SHOW_MORE = (Button) view.findViewById(R.id.hp_search_list_more);
 
                 view.setTag(holder);
 
@@ -892,6 +801,8 @@ public class Profile extends AppCompatActivity {
             else holder = (ViewHolder) view.getTag();
 
             holder.TV_USERNAME.setText(searcharraylist.get(position).getUsername());
+
+            holder.TV_USERTYPE.setText(searcharraylist.get(position).getUsertype());
 
             if(!searcharraylist.get(position).getUserimage().equals("")) {
 
@@ -905,10 +816,11 @@ public class Profile extends AppCompatActivity {
 
             else {
 
-                holder.IV_USERIMAGE.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.me_profile, null));
+                holder.IV_USERIMAGE.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.app_userimage, null));
                 holder.IV_USERIMAGE.setImageResource(R.drawable.app_userbackground);
 
             }
+
 
             view.setOnClickListener(new View.OnClickListener() {
 
@@ -931,7 +843,7 @@ public class Profile extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    searchProfiles(searchText, searcharraylist.size());
+                    searchData(searchText, searcharraylist.size());
                 }
             });
 
@@ -944,13 +856,19 @@ public class Profile extends AppCompatActivity {
     private class ItemList {
 
         private String username;
+        private String usertype;
         private String userimage;
 
-        private ItemList(String username, String userimage) {
+        private ItemList(String username, String userimage, String usertype) {
 
             this.username = username;
+            this.usertype = usertype;
             this.userimage = userimage;
 
+        }
+
+        private String getUsertype() {
+            return this.usertype;
         }
 
         private String getUsername() {
@@ -960,512 +878,6 @@ public class Profile extends AppCompatActivity {
         private String getUserimage() {
             return this.userimage;
         }
-
-    }
-
-
-    private void getInitialProfilePostsData() {
-
-        StringRequest stringRequest = new StringRequest(BasicFunctions.GET_POST_PROFILE + Profile.PROFILE_USERNAME + "&index=" + 0, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                showList_InitialPosts(response);
-
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(Profile.this, error.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        stringRequest.setRetryPolicy(
-                new DefaultRetryPolicy(
-                        0,
-                        -1,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        RequestQueue requestQueue = Volley.newRequestQueue(Profile.this);
-        requestQueue.add(stringRequest);
-    }
-
-
-
-    protected void showList_InitialPosts(String response) {
-
-        String hp_id;
-        String hp_title;
-        String hp_desc;
-        String hp_picture_1;
-        String hp_type;
-        String hp_timestamp;
-        String hp_username;
-        String hp_userimage;
-
-
-        try {
-            JSONObject jsonObj = new JSONObject(response);
-            AllProfilePostsArray = jsonObj.getJSONArray(basicFunctions.JSON_ARRAY);
-
-            post.setTotal(0);
-
-            for (int i = 0; i < AllProfilePostsArray.length(); i++) {
-                JSONObject jsonObject = AllProfilePostsArray.getJSONObject(i);
-
-                hp_id = jsonObject.getString(basicFunctions.KEY_POST_ID);
-                hp_type = jsonObject.getString(basicFunctions.KEY_POST_TYPE);
-                hp_title = jsonObject.getString(basicFunctions.KEY_POST_TITLE);
-                hp_desc = jsonObject.getString(basicFunctions.KEY_POST_DESC);
-                hp_picture_1 = jsonObject.getString(basicFunctions.KEY_POST_IMAGE);
-                hp_timestamp = jsonObject.getString(basicFunctions.KEY_POST_TIMESTAMP);
-                hp_username = jsonObject.getString(basicFunctions.KEY_USER_USERNAME);
-                hp_userimage = jsonObject.getString(basicFunctions.KEY_USER_IMAGE);
-
-                Post data = new Post();
-
-                data.setDetails(hp_id, hp_picture_1, hp_title, hp_desc,
-                        hp_type, hp_timestamp, hp_username, hp_userimage);
-
-                mProfilePosts.add(data);
-
-                data.setTotal(mProfilePosts.size());
-
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Profile.this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        myProfilePostsAdapter = new MyProfilePostsAdapter(Profile.this);
-        recyclerView.setAdapter(myProfilePostsAdapter);
-
-        if (post.getTotal() == 0)
-            Toast.makeText(Profile.this, "No Posts to display !", Toast.LENGTH_LONG).show();
-
-        myProfilePostsAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore() {
-
-                mProfilePosts.add(null);
-                myProfilePostsAdapter.notifyItemInserted(mProfilePosts.size() - 1);
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        pDialog = ProgressDialog.show(Profile.this, "", "Fetching Posts ... ", false, false);
-
-                        mProfilePosts.remove(mProfilePosts.size() - 1);
-                        myProfilePostsAdapter.notifyItemRemoved(mProfilePosts.size());
-
-                        int index = mProfilePosts.size();
-
-                        getMoreProfilePostsData(index);
-
-
-                    }
-                }, 1000);
-            }
-        });
-
-    }
-
-
-    private void getMoreProfilePostsData(int index) {
-
-        StringRequest stringRequest = new StringRequest(BasicFunctions.GET_POST_PROFILE + Profile.PROFILE_USERNAME + "&index=" + index, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                showList_MorePosts(response);
-
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(Profile.this, error.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        stringRequest.setRetryPolicy(
-                new DefaultRetryPolicy(
-                        0,
-                        -1,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        RequestQueue requestQueue = Volley.newRequestQueue(Profile.this);
-        requestQueue.add(stringRequest);
-    }
-
-
-    protected void showList_MorePosts(String response) {
-
-        String hp_id;
-        String hp_title;
-        String hp_desc;
-        String hp_picture_1;
-        String hp_type;
-        String hp_timestamp;
-        String hp_username;
-        String hp_userimage;
-
-
-        try {
-            JSONObject jsonObj = new JSONObject(response);
-            AllProfilePostsArray = jsonObj.getJSONArray(basicFunctions.JSON_ARRAY);
-
-            if(AllProfilePostsArray.length() == 0) {
-
-                Toast.makeText(Profile.this, "No more Posts to display !", Toast.LENGTH_LONG).show();
-                load_over = 1;
-
-            }
-
-            for (int i = 0; i < AllProfilePostsArray.length(); i++) {
-                JSONObject jsonObject = AllProfilePostsArray.getJSONObject(i);
-
-                hp_id = jsonObject.getString(basicFunctions.KEY_POST_ID);
-                hp_type = jsonObject.getString(basicFunctions.KEY_POST_TYPE);
-                hp_title = jsonObject.getString(basicFunctions.KEY_POST_TITLE);
-                hp_desc = jsonObject.getString(basicFunctions.KEY_POST_DESC);
-                hp_picture_1 = jsonObject.getString(basicFunctions.KEY_POST_IMAGE);
-                hp_timestamp = jsonObject.getString(basicFunctions.KEY_POST_TIMESTAMP);
-                hp_username = jsonObject.getString(basicFunctions.KEY_USER_USERNAME);
-                hp_userimage = jsonObject.getString(basicFunctions.KEY_USER_IMAGE);
-
-                Post data = new Post();
-
-                data.setDetails(hp_id, hp_picture_1, hp_title, hp_desc,
-                        hp_type, hp_timestamp, hp_username, hp_userimage);
-
-                mProfilePosts.add(data);
-
-                data.setTotal(mProfilePosts.size());
-
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        myProfilePostsAdapter.notifyDataSetChanged();
-        myProfilePostsAdapter.setLoaded();
-
-        pDialog.dismiss();
-
-    }
-
-
-    private interface OnLoadMoreListener {
-        void onLoadMore();
-    }
-
-
-    private class MyProfilePostsAdapter extends RecyclerView.Adapter<ViewHolder> {
-
-        private LayoutInflater mLayoutInflater;
-        private OnLoadMoreListener mOnLoadMoreListener;
-
-        private boolean isLoading;
-        private int visibleThreshold = 3;
-        private int lastVisibleItem, totalItemCount;
-
-        private MyProfilePostsAdapter(Context context) {
-
-            mLayoutInflater = LayoutInflater.from(context);
-
-            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-
-                    if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold) && load_over == 0) {
-                        if (mOnLoadMoreListener != null) {
-                            mOnLoadMoreListener.onLoadMore();
-                        }
-                        isLoading = true;
-                    }
-                }
-            });
-
-        }
-
-        private void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
-            this.mOnLoadMoreListener = mOnLoadMoreListener;
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-
-            View view = mLayoutInflater.inflate(R.layout.activity_hp_item, viewGroup, false);
-            return new ViewHolder(view);
-
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
-
-            final Post data = mProfilePosts.get(position);
-
-            viewHolder.setData(data.getId(), data.getImage(),
-                    data.getTitle(), data.getDescription(), data.getType(),
-                    data.getTimestamp(), data.getUsername(), data.getUserimage());
-
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    Intent intent = new Intent(Profile.this, PostView.class);
-                    intent.putExtra("id", data.getId());
-                    startActivity(intent);
-
-                }
-            });
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return post.getTotal();
-        }
-
-        private void setLoaded() {
-            isLoading = false;
-        }
-
-    }
-
-
-    class ViewHolder extends RecyclerView.ViewHolder {
-
-        private ImageView mImageView;
-        private ImageView mUserImageView;
-        private LinearLayout mLinearLayout;
-        private TextView mTitleTextView, mPostDateTextView,mDescriptionTextView, mUserNameTextView, mReportTextView;
-        private LinearLayout mUserProfile;
-
-        private ImageButton mDeleteButton;
-
-        private ViewHolder(View itemView) {
-            super(itemView);
-
-            mLinearLayout = itemView.findViewById(R.id.hp_item_layout);
-            mImageView = itemView.findViewById(R.id.hp_item_image);
-            mTitleTextView = itemView.findViewById(R.id.hp_item_title);
-            mPostDateTextView = itemView.findViewById(R.id.hp_item_date);
-            mDescriptionTextView = itemView.findViewById(R.id.hp_item_description);
-            mUserNameTextView = itemView.findViewById(R.id.hp_user_name);
-            mUserImageView = itemView.findViewById(R.id.hp_user_image);
-            mUserProfile = itemView.findViewById(R.id.hp_user);
-            mDeleteButton = itemView.findViewById(R.id.hp_delete);
-            mReportTextView = itemView.findViewById(R.id.hp_report);
-
-        }
-
-        private void setData(final String id,String image, final String title,String description, final String type,
-                             String timestamp, final String username, String userimage) {
-
-            if(username.equals(basicFunctions.getUser_name()))
-                mDeleteButton.setVisibility(View.VISIBLE);
-
-            else mDeleteButton.setVisibility(GONE);
-
-            if(username.equals(basicFunctions.getUser_name()))
-                mReportTextView.setVisibility(GONE);
-
-            else mReportTextView.setVisibility(View.VISIBLE);
-
-
-            switch(type){
-
-                case "GK":
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(Profile.this, R.color.colorGK));
-                    break;
-
-                case "QNA":
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(Profile.this, R.color.colorQnA));
-                    break;
-
-                case "Materials":
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(Profile.this, R.color.colorStudyMaterials));
-                    break;
-
-                case "Teach":
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(Profile.this, R.color.colorTeach));
-                    break;
-
-                case "Ideas":
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(Profile.this, R.color.colorIdeas));
-                    break;
-
-                case "Events":
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(Profile.this, R.color.colorEvents));
-                    break;
-
-                default:
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(Profile.this, R.color.colorGK));
-                    break;
-
-            }
-
-            mTitleTextView.setText(title);
-            mDescriptionTextView.setText(description);
-            mPostDateTextView.setText(BasicFunctions.getTimeStamp(timestamp));
-            mUserNameTextView.setText(username);
-
-            if(!image.equals("")) {
-
-                mImageView.setVisibility(View.VISIBLE);
-
-                mImageView.setBackground(null);
-                byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                mImageView.setImageBitmap(Bitmap.createScaledBitmap(decodedByte, 250, 250, false));
-
-            }
-
-            else {
-
-                mImageView.setVisibility(GONE);
-                mImageView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.mp_usercover, null));
-                mImageView.setImageResource(R.drawable.app_userbackground);
-
-            }
-
-            if(!userimage.equals("")) {
-
-                mUserImageView.setBackground(null);
-                byte[] decodedString_1 = Base64.decode(userimage, Base64.DEFAULT);
-                Bitmap decodedByte_1 = BitmapFactory.decodeByteArray(decodedString_1, 0, decodedString_1.length);
-
-                mUserImageView.setImageBitmap(Bitmap.createScaledBitmap(decodedByte_1, 60, 60, false));
-
-
-            }
-
-            else {
-
-                mUserImageView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.app_userimage, null));
-                mUserImageView.setImageResource(R.drawable.app_userbackground);
-
-            }
-
-            mUserProfile.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    Intent intent = new Intent(Profile.this, Profile.class);
-                    intent.putExtra("type", username);
-                    startActivity(intent);
-
-                }
-            });
-
-            mDeleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    delete_post(id);
-
-                }
-            });
-
-            mReportTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    report(id, title);
-
-                }
-            });
-        }
-    }
-
-
-    private void delete_post(final String item_id){
-
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-
-                        String method = "deletepost";
-
-                        basicFunctions.performTask(method, item_id, "");
-
-                        Intent intent = new Intent(Profile.this, Profile.class);
-                        startActivity(intent);
-
-                        break;
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-
-                        Toast.makeText(Profile.this,"Deletion Cancelled !",Toast.LENGTH_LONG).show();
-
-                        break;
-                }
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
-        builder.setMessage("Are you sure you want to delete this Post ?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
-
-    }
-
-
-
-    private void report(final String item_id, final String item_title){
-
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-
-                        String method = "reportpost";
-
-                        basicFunctions.performTask(method, item_id, "P : " + item_title);
-
-                        break;
-
-                    case DialogInterface.BUTTON_NEGATIVE:
-
-                        Toast.makeText(Profile.this,"Reporting Cancelled !",Toast.LENGTH_LONG).show();
-
-                        break;
-                }
-            }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
-        builder.setMessage("Are you sure you want to report this Post ?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
 
     }
 

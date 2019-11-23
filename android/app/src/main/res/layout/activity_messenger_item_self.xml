@@ -13,39 +13,66 @@
         android:text="@string/fetch_older_messages"
         android:visibility="gone"
         android:textColor="@color/colorSecondary"
-        android:background="@color/colorPrimaryTransparent77"
+        android:background="@color/colorPrimary"
         android:layout_margin="10dp"
         android:padding="5dp"
         android:textStyle="bold"/>
 
 <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:gravity="end"
-    android:baselineAligned="false">
+    android:orientation="horizontal"
+    android:baselineAligned="false"
+    android:padding="5dp">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="60dp"
+        android:layout_marginStart="5dp">
+
+    <com.pkmmte.view.CircularImageView
+        android:id="@+id/chat_userimage"
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_weight="4"
+        android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/mes_i_message"
+        android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="5dp"
         android:textStyle="bold"
         android:textIsSelectable="true"
         android:autoLink="web"
-        android:background="@drawable/mes_blue_bubble"
+        android:background="@drawable/messages_white_bubble"
         android:textSize="14sp"
-        android:textColor="@color/colorSecondary" />
+        android:textColor="@color/colorPrimary"
+        />
 
     <TextView
-        android:id="@+id/mes_i_timestamp"
+        android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/message"
+        android:layout_marginBottom="40dp"
+        android:layout_marginEnd="5dp"
+        android:paddingTop="5dp"
         android:textSize="12sp"
-        android:textColor="@color/colorQuaternary" />
+        android:textColor="@color/colorEvents"/>
+
+    </RelativeLayout>
 
 </LinearLayout>
 

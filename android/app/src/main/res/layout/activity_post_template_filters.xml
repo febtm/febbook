@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="60dp"
+        android:layout_marginBottom="60dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="@color/colorSecondary"
+                android:padding="5dp"
+                android:text="@string/filters_options"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pr_filters_post_usercourse"
+            android:orientation="vertical"
+            android:background="@drawable/item_white_border"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:background="@color/colorPrimary"
+                 android:gravity="center"
+                 android:padding="5dp">
+
+                <ImageView
+                    android:id="@+id/pr_filters_post_usercourse_image"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@null"
+                    android:background="@drawable/filters_course"/>
+
+                <Spinner
+                    android:id="@+id/pr_filters_post_usercourse_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:popupBackground="@color/colorAccent"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+         <LinearLayout
+             android:id="@+id/pr_filters_post_usertype"
+             android:orientation="vertical"
+             android:background="@drawable/item_white_border"
+             android:layout_height="wrap_content"
+             android:layout_width="match_parent"
+             android:layout_marginBottom="20dp">
+
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:background="@color/colorPrimary"
+                 android:gravity="center"
+                 android:padding="5dp">
+
+                 <ImageView
+                     android:id="@+id/pr_filters_post_usertype_image"
+                     android:layout_width="40dp"
+                     android:layout_height="40dp"
+                     android:contentDescription="@null"
+                     android:background="@drawable/filters_user"/>
+
+                 <Spinner
+                     android:id="@+id/pr_filters_post_usertype_spinner"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:popupBackground="@color/colorAccent"/>
+
+             </LinearLayout>
+
+         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pr_filters_post_date"
+            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:background="@drawable/item_white_border">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:gravity="center"
+                android:padding="5dp">
+
+                <ImageView
+                    android:id="@+id/pr_filters_post_date_image"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="@null"
+                    android:background="@drawable/filters_date"/>
+
+                <Spinner
+                    android:id="@+id/pr_filters_post_date_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:popupBackground="@color/colorAccent"/>
+
+            </LinearLayout>
+
+         </LinearLayout>
+
+     </LinearLayout>
+
+</ScrollView>

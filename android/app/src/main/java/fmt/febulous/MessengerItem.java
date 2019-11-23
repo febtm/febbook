@@ -1,22 +1,16 @@
 package fmt.febulous;
 
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -25,12 +19,11 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,22 +33,19 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.pkmmte.view.CircularImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
-import fmt.febulous.helper.BasicFunctions;
+import fmt.febulous.helper.Application;
 import fmt.febulous.model.ChatMessage;
 import fmt.febulous.model.ChatUser;
+import fmt.febulous.helper.EndPoints;
+import fmt.febulous.helper.BasicFunctions;
 
 
 public class MessengerItem extends AppCompatActivity {
@@ -73,9 +63,9 @@ public class MessengerItem extends AppCompatActivity {
 
     private EditText inputMessage;
 
-    ImageButton btnSend, MES_I_CANCEL;
+    Button btnSend;
 
-    String n_chat_room_id, n_userid, n_username, n_userimage;
+    String n_chat_room_id, n_userid, n_username;
 
     String final_message_id;
 
@@ -96,14 +86,8 @@ public class MessengerItem extends AppCompatActivity {
         }
     };
 
-    ImageButton BACK_BUTTON;
-
-    TextView MES_I_USERNAME;
-
-    ImageView MES_I_USERIMAGE;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -112,51 +96,19 @@ public class MessengerItem extends AppCompatActivity {
 
         basicFunctions = new BasicFunctions(this);
 
-        MES_I_USERIMAGE = findViewById(R.id.mes_i_userimage);
+        inputMessage = (EditText) findViewById(R.id.message);
 
-        BACK_BUTTON = findViewById(R.id.mes_i_back);
-
-        BACK_BUTTON.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(mHandler != null)
-                    stopRepeatingTask();
-
-                finish();
-
-            }
-        });
-
-        MES_I_USERNAME = findViewById(R.id.mes_i_username);
-
-        inputMessage = findViewById(R.id.mes_i_message);
-
-        MES_I_CANCEL = findViewById(R.id.mes_i_cancel);
-
-        MES_I_CANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                inputMessage.setText("");
-            }
-        });
-
-        btnSend = findViewById(R.id.mes_i_send);
+        btnSend = (Button) findViewById(R.id.btn_send);
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    sendMessage();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                sendMessage();
 
             }
         });
 
-        recyclerView = findViewById(R.id.mes_i_recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
@@ -175,38 +127,8 @@ public class MessengerItem extends AppCompatActivity {
         n_chat_room_id = intent.getStringExtra("chat_room_id");
         n_userid = intent.getStringExtra("userid");
         n_username = intent.getStringExtra("username");
-        n_userimage = intent.getStringExtra("userimage");
 
-        MES_I_USERNAME.setText(n_username);
-
-        if(!n_userimage.equals("")) {
-
-            MES_I_USERIMAGE.setBackground(null);
-            byte[] decodedString_1 = Base64.decode(n_userimage, Base64.DEFAULT);
-            Bitmap decodedByte_1 = BitmapFactory.decodeByteArray(decodedString_1, 0, decodedString_1.length);
-
-            MES_I_USERIMAGE.setImageBitmap(decodedByte_1);
-
-        }
-
-        else {
-
-            MES_I_USERIMAGE.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.me_profile, null));
-            MES_I_USERIMAGE.setImageResource(R.drawable.app_userbackground);
-
-        }
-
-        MES_I_USERIMAGE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent intent = new Intent(MessengerItem.this, Profile.class);
-                intent.putExtra("type", n_username);
-                startActivity(intent);
-                MessengerItem.this.finish();
-
-            }
-        });
+        setTitle("\t" + n_username.toUpperCase());
 
         if (n_chat_room_id == null) {
 
@@ -215,68 +137,14 @@ public class MessengerItem extends AppCompatActivity {
 
         }
 
-        if(basicFunctions.isConnectingToInternet())
-            fetchChat();
-
-        else {
-
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which){
-
-                        case DialogInterface.BUTTON_POSITIVE:
-
-                            if(basicFunctions.isConnectingToInternet())
-                                fetchChat();
-
-                            else {
-
-                                Toast.makeText(MessengerItem.this,
-                                        "No Internet Connection. Try again later !",
-                                        Toast.LENGTH_LONG).show();
-
-                                dialog.dismiss();
-
-                            }
-
-                            break;
-
-                        case DialogInterface.BUTTON_NEGATIVE:
-
-                            Toast.makeText(MessengerItem.this,
-                                    "No Internet Connection. Try again later !",
-                                    Toast.LENGTH_LONG).show();
-
-                            dialog.dismiss();
-
-                            break;
-
-                    }
-                }
-            };
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(MessengerItem.this);
-            builder.setMessage("No Internet Connection. Try again ?")
-                    .setPositiveButton("Yes", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener).show();
-
-        }
-
-
-    }
-
-
-    private void fetchChat() {
-
         String method = "readchat";
 
         basicFunctions.performTask(method, n_chat_room_id, n_userid);
 
         getInitialChatThread();
 
-
     }
+
 
     void startRepeatingTask() {
         mStatusChecker.run();
@@ -292,7 +160,7 @@ public class MessengerItem extends AppCompatActivity {
 
         pDialog = ProgressDialog.show(this, "", "Fetching Chat ... ", false, false);
 
-        String endPoint = BasicFunctions.GET_CHAT_ROOM + n_chat_room_id + "&index=" + 0 + "&type=old";
+        String endPoint = EndPoints.GET_CHAT_ROOM + n_chat_room_id + "&index=" + 0 + "&type=old";
 
         StringRequest strReq = new StringRequest(Request.Method.GET,
                 endPoint, new Response.Listener<String>() {
@@ -336,10 +204,12 @@ public class MessengerItem extends AppCompatActivity {
 
                         JSONObject userObj = commentObj.getJSONObject("user");
                         String userId = userObj.getString("user_id");
+                        String userName = userObj.getString("username");
+                        String userimage = userObj.getString("userimage");
 
                         final_message_id = obj.getJSONObject("final_message_id").getString("final_message_id");
 
-                        ChatUser chatUser = new ChatUser(userId);
+                        ChatUser chatUser = new ChatUser(userId, userName, userimage);
 
                         ChatMessage chatMessage = new ChatMessage();
                         chatMessage.setId(commentId);
@@ -394,14 +264,14 @@ public class MessengerItem extends AppCompatActivity {
                         -1,
                         DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
-        basicFunctions.addToRequestQueue(strReq);
+        Application.getInstance().addToRequestQueue(strReq);
 
     }
 
 
     private void getNewChatThread() {
 
-        String endPoint = BasicFunctions.GET_CHAT_ROOM + n_chat_room_id + "&index=" + final_message_id + "&type=new";
+        String endPoint = EndPoints.GET_CHAT_ROOM + n_chat_room_id + "&index=" + final_message_id + "&type=new";
 
         StringRequest strReq = new StringRequest(Request.Method.GET,
                 endPoint, new Response.Listener<String>() {
@@ -425,10 +295,12 @@ public class MessengerItem extends AppCompatActivity {
 
                         JSONObject userObj = commentObj.getJSONObject("user");
                         String userId = userObj.getString("user_id");
+                        String userName = userObj.getString("username");
+                        String userimage = userObj.getString("userimage");
 
                         final_message_id = obj.getJSONObject("final_message_id").getString("final_message_id");
 
-                        ChatUser chatUser = new ChatUser(userId);
+                        ChatUser chatUser = new ChatUser(userId, userName, userimage);
 
                         ChatMessage chatMessage = new ChatMessage();
                         chatMessage.setId(commentId);
@@ -436,10 +308,10 @@ public class MessengerItem extends AppCompatActivity {
                         chatMessage.setCreatedAt(createdAt);
                         chatMessage.setChatUser(chatUser);
 
-                        if(commentsObj.length() == 1 && !userId.equals(basicFunctions.getUser_id()))
-                            playMessengerSound();
-
                         chatMessageArrayList.add(chatMessage);
+
+                        if(commentsObj.length() == 1)
+                            playMessengerSound();
 
                         mAdapter.notifyDataSetChanged();
 
@@ -469,33 +341,14 @@ public class MessengerItem extends AppCompatActivity {
                         -1,
                         DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
-        basicFunctions.addToRequestQueue(strReq);
+        Application.getInstance().addToRequestQueue(strReq);
 
     }
 
 
-    private void sendMessage() throws ParseException {
+    private void sendMessage() {
 
-        String message = this.inputMessage.getText().toString().trim();
-
-        final String mess = message;
-
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-        String timeStamp = dateFormat.format(new Date());
-
-        Date date = dateFormat.parse(timeStamp);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        int hours = calendar.get(Calendar.HOUR_OF_DAY);
-        int minutes = calendar.get(Calendar.MINUTE);
-        int seconds = calendar.get(Calendar.SECOND);
-
-        message = messageEncrypt(message, hours, minutes, seconds);
-
-        message = URLEncoder.encode(message);
+        final String message = this.inputMessage.getText().toString().trim();
 
         if (TextUtils.isEmpty(message)) {
 
@@ -508,7 +361,7 @@ public class MessengerItem extends AppCompatActivity {
 
         basicFunctions.performTask(method, n_chat_room_id, n_userid);
 
-        String endPoint = BasicFunctions.SEND_MESSAGE + n_chat_room_id + "&user_id=" + basicFunctions.getUser_id() + "&message=" + message + "&timestamp=" + timeStamp;
+        String endPoint = EndPoints.SEND_MESSAGE + n_chat_room_id + "&user_id=" + basicFunctions.getUser_id() + "&message=" + message;
 
         endPoint = endPoint.replaceAll(" ", "%20");
 
@@ -532,10 +385,12 @@ public class MessengerItem extends AppCompatActivity {
 
                     JSONObject userObj = obj.getJSONObject("user");
                     String userId = userObj.getString("user_id");
+                    String userName = userObj.getString("username");
+                    String userimage = userObj.getString("userimage");
 
                     final_message_id = obj.getJSONObject("final_message_id").getString("final_message_id");
 
-                    ChatUser chatUser = new ChatUser(userId);
+                    ChatUser chatUser = new ChatUser(userId, userName,userimage);
 
                     ChatMessage chatMessage = new ChatMessage();
                     chatMessage.setId(commentId);
@@ -560,7 +415,7 @@ public class MessengerItem extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 NetworkResponse networkResponse = error.networkResponse;
                 Toast.makeText(getApplicationContext(), "Volley error: " + error.getMessage() + ", Code: " + networkResponse, Toast.LENGTH_LONG).show();
-                inputMessage.setText(mess);
+                inputMessage.setText(message);
             }
         });
 
@@ -570,97 +425,20 @@ public class MessengerItem extends AppCompatActivity {
                         -1,
                         DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
-        basicFunctions.addToRequestQueue(strReq);
-
-    }
-
-
-    private String messageEncrypt(String message, int hours, int minutes, int seconds){
-
-        int count;
-
-        StringBuilder encrypted_message = new StringBuilder();
-
-        for(int i = 0; i < message.length(); i++){
-
-            if(Character.isLetter(message.charAt(i))) {
-
-                if(i % 2 == 0)
-                    count = hours % 26;
-
-                else if(i % 3 == 0)
-                    count = minutes % 26;
-
-                else
-                    count = seconds % 26;
-
-                if (Character.isUpperCase(message.charAt(i)))
-                    encrypted_message.append((char) (((int) message.charAt(i) + count - 65) % 26 + 65));
-
-                else
-                    encrypted_message.append((char) (((int) message.charAt(i) + count - 97) % 26 + 97));
-
-            }
-
-            else
-                encrypted_message.append(message.charAt(i));
-
-        }
-
-        return encrypted_message.toString();
-
-    }
-
-
-
-    private String messageDecrypt(String message, int hours, int minutes, int seconds){
-
-        int count;
-
-        StringBuilder decrypted_message = new StringBuilder();
-
-        for(int i = 0; i < message.length(); i++){
-
-            if(Character.isLetter(message.charAt(i))) {
-
-                if(i % 2 == 0)
-                    count = 26 - (hours % 26);
-
-                else if(i % 3 == 0)
-                    count = 26 - (minutes % 26);
-
-                else
-                    count = 26 - (seconds % 26);
-
-                if (Character.isUpperCase(message.charAt(i)))
-                    decrypted_message.append((char) (((int) message.charAt(i) + count - 65) % 26 + 65));
-
-                else
-                    decrypted_message.append((char) (((int) message.charAt(i) + count - 97) % 26 + 97));
-
-            }
-
-            else
-                decrypted_message.append(message.charAt(i));
-
-        }
-
-        return decrypted_message.toString();
+        Application.getInstance().addToRequestQueue(strReq);
 
     }
 
 
     private void playMessengerSound() {
-
         try {
             Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                    + "://" + this.getApplicationContext().getPackageName() + "/raw/messenger_sound");
-            Ringtone r = RingtoneManager.getRingtone(this.getApplicationContext(), alarmSound);
+                    + "://" + Application.getInstance().getApplicationContext().getPackageName() + "/raw/messenger_sound");
+            Ringtone r = RingtoneManager.getRingtone(Application.getInstance().getApplicationContext(), alarmSound);
             r.play();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -668,11 +446,12 @@ public class MessengerItem extends AppCompatActivity {
 
         pDialog = ProgressDialog.show(this, "", "Fetching Chat ... ", false, false);
 
-        String endPoint = BasicFunctions.GET_CHAT_ROOM + n_chat_room_id + "&index=" + chatMessageArrayList.size() + "&type=old";
+        String endPoint = EndPoints.GET_CHAT_ROOM + n_chat_room_id + "&index=" + chatMessageArrayList.size() + "&type=old";
 
         final ArrayList<ChatMessage> chatTempMessageArrayList = new ArrayList<>();
 
-        chatTempMessageArrayList.addAll(chatMessageArrayList);
+        for(int i = 0; i < chatMessageArrayList.size(); i++)
+            chatTempMessageArrayList.add(chatMessageArrayList.get(i));
 
         chatMessageArrayList.clear();
 
@@ -693,7 +472,8 @@ public class MessengerItem extends AppCompatActivity {
 
                         Toast.makeText(MessengerItem.this, "No More Old Messages to display !", Toast.LENGTH_LONG).show();
 
-                        chatMessageArrayList.addAll(chatTempMessageArrayList);
+                        for(int j = 0; j < chatTempMessageArrayList.size(); j++)
+                            chatMessageArrayList.add(chatTempMessageArrayList.get(j));
 
                         mAdapter.notifyDataSetChanged();
 
@@ -710,10 +490,12 @@ public class MessengerItem extends AppCompatActivity {
 
                         JSONObject userObj = commentObj.getJSONObject("user");
                         String userId = userObj.getString("user_id");
+                        String userName = userObj.getString("username");
+                        String userimage = userObj.getString("userimage");
 
                         final_message_id = obj.getJSONObject("final_message_id").getString("final_message_id");
 
-                        ChatUser chatUser = new ChatUser(userId);
+                        ChatUser chatUser = new ChatUser(userId, userName, userimage);
 
                         ChatMessage chatMessage = new ChatMessage();
                         chatMessage.setId(commentId);
@@ -725,7 +507,8 @@ public class MessengerItem extends AppCompatActivity {
 
                         if(i == (commentsObj.length() - 1)){
 
-                            chatMessageArrayList.addAll(chatTempMessageArrayList);
+                            for(int j = 0; j < chatTempMessageArrayList.size(); j++)
+                                chatMessageArrayList.add(chatTempMessageArrayList.get(j));
 
                             mAdapter.notifyDataSetChanged();
 
@@ -757,7 +540,7 @@ public class MessengerItem extends AppCompatActivity {
                         -1,
                         DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
-        basicFunctions.addToRequestQueue(strReq);
+        Application.getInstance().addToRequestQueue(strReq);
 
     }
 
@@ -778,9 +561,8 @@ public class MessengerItem extends AppCompatActivity {
 
         }
 
-        @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View itemView;
 
             if (viewType == SELF) {
@@ -810,38 +592,56 @@ public class MessengerItem extends AppCompatActivity {
             return position;
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
         @Override
-        public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, int position) {
 
             ChatMessage chatMessage = chatMessageArrayList.get(position);
 
-            String timestamp = BasicFunctions.getTimeStamp(chatMessage.getCreatedAt());
+            holder.message.setText(chatMessage.getMessage());
 
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+            String timestamp = basicFunctions.getTimeStamp(chatMessage.getCreatedAt());
 
-            Date date = null;
+            if(basicFunctions.getUser_name().equals(chatMessage.getChatUser().getUser_name())) {
 
-            try {
-                date = dateFormat.parse(chatMessage.getCreatedAt());
-            } catch (ParseException e) {
-                e.printStackTrace();
+                timestamp = "You, " + timestamp;
+
+                if (!basicFunctions.getUser_image().equals("")) {
+
+                    holder.user_message_image.setBackground(null);
+                    byte[] decodedString = Base64.decode(basicFunctions.getUser_image(), Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    holder.user_message_image.setImageBitmap(Bitmap.createScaledBitmap(decodedByte, 60, 60, false));
+
+                } else {
+
+                    holder.user_message_image.setBackground(ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.app_userimage, null));
+                    holder.user_message_image.setImageResource(R.drawable.app_userbackground);
+                }
             }
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            int hours = calendar.get(Calendar.HOUR_OF_DAY);
-            int minutes = calendar.get(Calendar.MINUTE);
-            int seconds = calendar.get(Calendar.SECOND);
+            else {
 
-            holder.message.setText(messageDecrypt(chatMessage.getMessage(), hours, minutes, seconds));
+                timestamp = chatMessage.getChatUser().getUser_name() + ", " + timestamp;
+
+                if (!chatMessage.getChatUser().getUser_image().equals("")) {
+
+                    holder.user_message_image.setBackground(null);
+                    byte[] decodedString = Base64.decode(chatMessage.getChatUser().getUser_image(), Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+                    holder.user_message_image.setImageBitmap(Bitmap.createScaledBitmap(decodedByte, 60, 60, false));
+
+                } else {
+
+                    holder.user_message_image.setBackground(ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.app_userimage, null));
+                    holder.user_message_image.setImageResource(R.drawable.app_userbackground);
+
+                }
+
+            }
 
             if(position == 0)
                 holder.fetch_old.setVisibility(View.VISIBLE);
-
-            else
-                holder.fetch_old.setVisibility(View.GONE);
 
             holder.fetch_old.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -867,16 +667,37 @@ public class MessengerItem extends AppCompatActivity {
     private class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView message, timestamp;
+        CircularImageView user_message_image;
         Button fetch_old;
 
         private ViewHolder(View view) {
             super(view);
 
-            message = itemView.findViewById(R.id.mes_i_message);
-            timestamp = itemView.findViewById(R.id.mes_i_timestamp);
-            fetch_old = view.findViewById(R.id.fetch_old);
+            message = (TextView) itemView.findViewById(R.id.message);
+            timestamp = (TextView) itemView.findViewById(R.id.timestamp);
+            user_message_image = (CircularImageView)view.findViewById(R.id.chat_userimage);
+            fetch_old = (Button) view.findViewById(R.id.fetch_old);
         }
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+
+                if(mHandler != null)
+                    stopRepeatingTask();
+
+                finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
 
 }

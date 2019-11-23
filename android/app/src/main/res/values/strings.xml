@@ -1,240 +1,254 @@
 <resources>
 
-    <string name="app_name">FebBook</string>
+    <string name="app_name">Febulous</string>
 
-    <string name="fb_app_id">1123721754365610</string>
-
-
-	<string name="li_admob_banner">ca-app-pub-6196885651315287/6927957052</string>
-
-    <string name="hp_admob_banner">ca-app-pub-6196885651315287/2438881851</string>
-
-    <string name="pv_admob_banner">ca-app-pub-6196885651315287/8345814659</string>
-
-    <string name="pi_admob_banner">ca-app-pub-6196885651315287/6869081450</string>
-
-    <string name="p_admob_banner">ca-app-pub-6196885651315287/9822547855</string>
-
-    <string name="mes_admob_banner">ca-app-pub-6196885651315287/7567085456</string>
+    <string name="facebook_app_id">1123721754365610</string>
 
 
-    <string-array name="lsr_menu_titles">
-        <item>Log In</item>
-        <item>Sign In</item>
-        <item>Recover Password</item>
-        <item>Contact Us</item>
-        <item>Rate Us</item>
-        <item>Find Us</item>
-        <item>Exit</item>
-    </string-array>
+	<string name="admob_banner_login">ca-app-pub-6196885651315287/6927957052</string>
 
-    <array name="lsr_menu_icons">
-        <item>@drawable/lsr_me_login</item>
-        <item>@drawable/lsr_me_signin</item>
-        <item>@drawable/lsr_me_rec_pass</item>
-        <item>@drawable/me_contact_us</item>
-        <item>@drawable/me_rate_us</item>
-        <item>@drawable/me_find_us</item>
-        <item>@drawable/lsr_me_exit</item>
-    </array>
+    <string name="admob_banner_dashboard">ca-app-pub-6196885651315287/7567085456</string>
+
+    <string name="admob_banner_homepage">ca-app-pub-6196885651315287/2438881851</string>
+
+    <string name="admob_banner_notification">ca-app-pub-6196885651315287/5392348252</string>
+
+    <string name="admob_banner_messenger">ca-app-pub-6196885651315287/1601277052</string>
+
+    <string name="admob_banner_post_item">ca-app-pub-6196885651315287/6869081450</string>
+
+    <string name="admob_banner_post_view">ca-app-pub-6196885651315287/8345814659</string>
+
+    <string name="admob_banner_profile">ca-app-pub-6196885651315287/9822547855</string>
 
 
-    <string-array name="menu_titles">
-        <item>Home</item>
-        <item>Profile</item>
-        <item>Messenger</item>
-        <item>Notifications</item>
-        <item>Contact Us</item>
-        <item>Rate Us</item>
-        <item>Find Us</item>
-        <item>Log Out</item>
-    </string-array>
+    <string name="menu_delete">Delete</string>
 
-    <array name="menu_icons">
-        <item>@drawable/me_home</item>
-        <item>@drawable/me_profile</item>
-        <item>@drawable/me_messenger</item>
-        <item>@drawable/me_notifications</item>
-        <item>@drawable/me_contact_us</item>
-        <item>@drawable/me_rate_us</item>
-        <item>@drawable/me_find_us</item>
-        <item>@drawable/me_logout</item>
-    </array>
+    <string name="menu_ok">OK</string>
 
 
-    <string name="log_in">Log In</string>
 
-    <string name="login_enter_credentials">Enter Your Credentials</string>
+    <string name="full_name">FULL NAME</string>
 
-    <string name="login_log_in">Log In</string>
+    <string name="email_id">EMAIL - ID</string>
 
+    <string name="type_in_your_message">TYPE IN YOUR MESSAGE &#8230; </string>
 
-    <string name="sign_in">Sign In</string>
+    <string name="send_message">SEND MESSAGE !</string>
 
-    <string name="si_sign_up">Enter Your Credentials to Sign Up for a Febulous Experience !</string>
+    <string name="title">TITLE</string>
 
-    <string name="si_tandc">By Signing In, You agree to our Terms and Conditions.\nClick Here to download and view it !</string>
+    <string name="description">DESCRIPTION</string>
 
-    <string name="si_sign_in">Sign In</string>
+    <string name="filters_options">FILTER OPTIONS</string>
 
-    <string name="si_sign_in_with">Or\n\nSign In with</string>
+    <string name="username">USERNAME</string>
 
+    <string name="timestamp">TIMESTAMP</string>
 
-    <string name="home">Home</string>
+    <string name="report_post">Report this Post !</string>
 
-
-    <string name="menu">Menu</string>
-
-
-    <string name="messenger">Messenger</string>
-
-
-    <string name="notifications">Notifications</string>
-
-
-    <string name="name">Name</string>
-
-    <string name="email_id">Email-Id</string>
-
-    <string name="type_in_your_message">Type in your Message &#8230;</string>
-
-    <string name="send_message">Send Message</string>
-
-    <string name="title">Title</string>
-
-    <string name="description">Description</string>
-
-    <string name="username">Username</string>
-
-    <string name="timestamp">Timestamp</string>
-
-    <string name="report_post">Report this Post</string>
-
-    <string name="type">Type</string>
+    <string name="type">TYPE</string>
 
     <string name="digits">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
 
-    <string name="password">Password</string>
+    <string name="password">PASSWORD</string>
+
+    <string name="profile_options">PROFILE OPTIONS</string>
 
     <string name="count">0</string>
 
-    <string name="search_posts">Search Posts &#8230;</string>
+    <string name="search_posts">SEARCH POSTS</string>
 
-    <string name="search_more">Search More</string>
+    <string name="search_more">SEARCH MORE &#8230; </string>
 
-    <string name="fetch_older_messages">Fetch Older Messages</string>
+    <string name="fetch_older_messages">FETCH OLDER MESSAGES &#8230; </string>
 
+    <string name="about_me">ABOUT ME</string>
 
-    <string name="profile">Profile</string>
+    <string name="date_of_birth">BIRTH DATE</string>
 
-    <string name="about_me">About Me</string>
+    <string name="gender">GENDER</string>
 
-    <string name="date_of_birth">Birth Date</string>
+    <string name="general_digest">GENERAL DIGEST</string>
 
-    <string name="gender">Gender</string>
+    <string name="qna_section">Q N A SECTION</string>
 
-    <string name="change_the_picture">Change The Picture</string>
+    <string name="study_materials">STUDY MATERIALS</string>
+
+    <string name="teach_a_topic">TEACH A TOPIC</string>
+
+    <string name="ideas_galore">IDEAS GALORE</string>
+
+    <string name="events_and_invites">EVENTS AND INVITES</string>
+
+    <string name="change_the_picture">CHANGE THE PICTURE !</string>
 
     <string name="male">Male</string>
 
     <string name="female">Female</string>
 
 
-    <string name="hp_db">DASHBOARD</string>
 
-    <string name="hp_db_gk">GENERAL DIGEST</string>
+    <string name="contact_subject">SUBJECT</string>
 
-    <string name="hp_db_qna">Q N A SECTION</string>
-
-    <string name="hp_db_materials">STUDY MATERIALS</string>
-
-    <string name="hp_db_tat">TEACH A TOPIC</string>
-
-    <string name="hp_db_ideas">IDEAS GALORE</string>
-
-    <string name="hp_db_events">EVENTS AND INVITES</string>
-
-
-    <string name="p_search_users">Search Users &#8230;</string>
-
-    <string name="p_contact_user">Contact This User</string>
-
-    <string name="p_report_user">Report This User</string>
-
-    <string name="p_personal_details">Personal Details</string>
-
-    <string name="p_other_details">Other Details</string>
-
-    <string name="p_course">Course</string>
-
-    <string name="p_college">College</string>
-
-    <string name="p_department">Department</string>
-
-    <string name="p_fa_edit_profile">EDIT PROFILE</string>
-
-    <string name="p_fa_view_profile">VIEW PROFILE</string>
-
-    <string name="p_fa_view_posts">VIEW POSTS</string>
-
-
-    <string name="edit_profile">Edit Profile</string>
-
-    <string name="ep_username">Username *</string>
-
-    <string name="ep_email_id">Email-Id *</string>
-
-    <string name="ep_gender_male">M</string>
-
-    <string name="ep_gender_female">F</string>
-
-    <string name="ep_current_password">Current Password *</string>
-
-    <string name="ep_new_password">New Password *</string>
-
-    <string name="ep_confirm_new_password">Confirm New Password *</string>
-
-    <string name="ep_edit">Edit</string>
-
-
-    <string name="post_item">Post To FebBook</string>
-
-    <string name="pi_add_picture">Add A Picture</string>
-
-    <string name="pi_add_file">Add A File</string>
-
-    <string name="pi_share_on_facebook">Share On Facebook</string>
-
-    <string name="pi_share_on_twitter">Share On Twitter</string>
-
-    <string name="pi_post">Post</string>
-
-
-    <string name="view_a_post">View A Post</string>
-
-    <string name="pv_download_file">Download This File</string>
-
-    <string name="pv_type_in_your_comment">Type in your Comment &#8230;</string>
-
-    <string name="pv_report_comment">Report this Comment</string>
-
-
-    <string name="view_an_image">View An Image</string>
-
-
-    <string name="contact_us">Contact Us</string>
-
-    <string name="cu_subject">Subject</string>
-
-    <string name="cu_contact_us">Send us your valuable feedback describing your experience while using FebBook.
+    <string name="contact">Send us your valuable feedback describing your experience while using Febulous.
         \n\nWe will be happy to reply and to take up every suggestion seriously thereby making each of our
         user\'s experience an even more Febulous One !</string>
 
 
-    <string name="recover_password">Recover Password</string>
 
-    <string name="rp_send_email">Send Recovery Email</string>
+    <string name="dashboard_choose_a_topic">CHOOSE A TOPIC !</string>
 
-    <string name="rp_enter_email">Enter Your Email-Id</string>
+    <string-array name="dashboard_titles">
+        <item>GENERAL DIGEST</item>
+        <item>Q N A SECTION</item>
+        <item>STUDY MATERIALS</item>
+        <item>TEACH A TOPIC</item>
+        <item>IDEAS GALORE</item>
+        <item>EVENTS AND INVITES</item>
+    </string-array>
+
+    <string-array name="dashboard_descriptions">
+        <item>View or Share the latest developments happening around you !</item>
+        <item>Respond to or Ask queries and keep yourself up to date !</item>
+        <item>Search or Post materials that will be of guidance while learning !</item>
+        <item>Gain or Share knowledge on topics of your interest !</item>
+        <item>Lend or Seek support for ideas that may turn out to become a reality someday !</item>
+        <item>View or Post details about Events happening around you !</item>
+    </string-array>
+
+    <array name="dashboard_icons">
+        <item>@drawable/db_gk</item>
+        <item>@drawable/db_qna</item>
+        <item>@drawable/db_materials</item>
+        <item>@drawable/db_teach</item>
+        <item>@drawable/db_ideas</item>
+        <item>@drawable/db_events</item>
+    </array>
+
+
+
+    <string name="forgot_password_send_email">SEND RECOVERY EMAIL !</string>
+
+    <string name="forgot_password_enter_email">Enter Your Email - Id</string>
+
+
+
+    <string name="homepage_explore_febulous">EXPLORE FEBULOUS &#8230; \n CLICK HERE TO GO TO YOUR DASHBOARD !</string>
+
+
+
+    <string name="login_enter_credentials">Enter Your Credentials</string>
+
+    <string name="login_log_in">LOG IN !</string>
+
+    <string name="login_forgot_password">Forgot Your Password ?</string>
+
+    <string name="login_recover_password">RECOVER IT !</string>
+
+    <string name="login_no_account">Don\'t have an Account ?</string>
+
+    <string name="login_sign_up">SIGN UP !</string>
+
+
+
+    <string-array name="menu_titles">
+        <item>PROFILE</item>
+        <item>FEBULOUS MESSENGER</item>
+        <item>NOTIFICATIONS</item>
+        <item>CONTACT US</item>
+        <item>LOGOUT OF FEBULOUS</item>
+    </string-array>
+
+    <array name="menu_icons">
+        <item>@drawable/menu_profile</item>
+        <item>@drawable/menu_messenger</item>
+        <item>@drawable/menu_notifications</item>
+        <item>@drawable/menu_contact</item>
+        <item>@drawable/menu_logout</item>
+    </array>
+
+
+
+    <string name="modify_profile_username">USERNAME *</string>
+
+    <string name="modify_profile_email_id">EMAIL - ID *</string>
+
+    <string name="modify_profile_gender_male">M</string>
+
+    <string name="modify_profile_gender_female">F</string>
+
+    <string name="modify_profile_current_password">CURRENT PASSWORD *</string>
+
+    <string name="modify_profile_new_password">NEW PASSWORD *</string>
+
+    <string name="modify_profile_confirm_new_password">CONFIRM NEW PASSWORD *</string>
+
+    <string name="modify_profile_modify_profile">MODIFY PROFILE !</string>
+
+    <string name="modify_profile_college_name">COLLEGE NAME</string>
+
+    <string name="modify_profile_department_name">DEPARTMENT NAME</string>
+
+
+
+    <string name="post_item_add_picture">ADD A PICTURE !</string>
+
+    <string name="post_item_add_file">ADD A FILE !</string>
+
+    <string name="post_item_share_on_facebook">SHARE ON FACEBOOK      </string>
+
+    <string name="post_item_share_on_twitter">SHARE ON TWITTER      </string>
+
+    <string name="post_item_post_to_febulous">POST TO FEBULOUS !</string>
+
+
+
+    <string name="post_recycler_post_to_febulous">CLICK HERE TO POST TO FEBULOUS !</string>
+
+
+
+    <string name="post_view_download_file">DOWNLOAD THIS FILE !</string>
+
+    <string name="post_view_type_in_your_comment">TYPE IN YOUR COMMENT &#8230; </string>
+
+    <string name="post_view_post_comment">POST COMMENT !</string>
+
+    <string name="post_view_report_comment">Report this Comment !</string>
+
+
+
+    <string name="profile_search_users">SEARCH USERS</string>
+
+    <string name="profile_contact_user">CONTACT THIS USER !</string>
+
+    <string name="profile_report_user">REPORT THIS USER !</string>
+
+    <string name="profile_personal_details">PERSONAL DETAILS</string>
+
+    <string name="profile_user_details">GENERAL USER\'S DETAILS</string>
+
+    <string name="profile_course_name">COURSE</string>
+
+    <string name="profile_college_name">COLLEGE</string>
+
+    <string name="profile_department_name">DEPARTMENT</string>
+
+    <string name="profile_view_posts">CLICK HERE TO VIEW POSTS !</string>
+
+    <string name="profile_view_profile">CLICK HERE TO VIEW PROFILE !</string>
+
+
+
+    <string name="signin_sign_up">Enter Your Credentials to Sign Up for a Febulous Experience !</string>
+
+    <string name="signin_tandc">By Signing In, You agree to our Terms and Conditions.\nClick Here to download it !</string>
+
+    <string name="signin_sign_in">SIGN IN !</string>
+
+    <string name="signin_sign_in_with">Or\n\nSign In with</string>
+
+
 
 </resources>

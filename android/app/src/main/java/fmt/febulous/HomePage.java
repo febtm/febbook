@@ -1,34 +1,27 @@
 package fmt.febulous;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.res.TypedArray;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,222 +32,85 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.github.clans.fab.FloatingActionButton;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.pkmmte.view.CircularImageView;
+import com.navdrawer.SimpleSideDrawer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 import fmt.febulous.helper.BasicFunctions;
-import fmt.febulous.helper.Menu;
-import fmt.febulous.model.Post;
+import fmt.febulous.helper.EndPoints;
 
 
-public class HomePage extends AppCompatActivity {
+public class HomePage extends AppCompatActivity
+    implements HomePageFragment.onHomepageFragmentItemSelected{
 
+
+    JSONArray CountArray = null;
 
     private BasicFunctions basicFunctions;
 
-    private Menu menu;
+    private SimpleSideDrawer LeftAndRightDrawers;
 
-    ImageButton MENU_BUTTON, SEARCH_CANCEL;
+    ListView leftMenuList;
 
-    private ProgressDialog pDialog;
+    String[] leftNavMenuTitles;
+    TypedArray leftNavMenuIcons;
+    Button IB_DASHBOARD;
 
-    private RecyclerView recyclerView;
-    LinearLayoutManager linearLayoutManager;
+    ArrayList<MenuListItem> LeftMenuItemList;
+    HomePage.MenuListAdapter LeftMenuListAdapter;
 
-    JSONArray HomePagePostArray = null;
+    private Integer unReadNotificationCount = 0;
+    private Integer unReadMessageCount = 0;
 
-    private List<Post> mHomePagePosts = new ArrayList<>();
-
-    private HomePagePostsAdapter homePagePostsAdapter;
-
-    private Post post;
-
-    private EditText SEARCH_BAR;
-
-    JSONArray SearchPostArray = null;
-
-    String searchText;
-    private ListView search_list;
-    private ListViewAdapter SearchListAdapter;
-    private ArrayList<ItemList> searcharraylist = new ArrayList<>();
-
-    private int load_over = 0;
-
-    FloatingActionButton HP_FA_GK, HP_FA_IDEAS, HP_FA_MATERIALS, HP_FA_EVENTS, HP_FA_QNA, HP_FA_TAT;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-        menu = new Menu(HomePage.this);
-
-        MENU_BUTTON = findViewById(R.id.hp_menu);
-
-        MENU_BUTTON.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                menu.LeftDrawer.toggleLeftDrawer();
-
-            }
-        });
-
-        SEARCH_BAR = findViewById(R.id.hp_search_bar);
-
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        assert imm != null;
-        imm.hideSoftInputFromWindow(SEARCH_BAR.getWindowToken(), 0);
-
-        SEARCH_CANCEL = findViewById(R.id.hp_search_cancel);
-
-        search_list = findViewById(R.id.hp_search_list);
-
-        search_list.setVisibility(View.GONE);
-
         basicFunctions = new BasicFunctions(this);
 
-        AdView mAdView = findViewById(R.id.hp_adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-        recyclerView = findViewById(R.id.hp_recycler_view);
+            Window window = this.getWindow();
 
-        recyclerView.setVisibility(View.VISIBLE);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-        post = new Post();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-        SEARCH_CANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
 
-                SEARCH_BAR.setText("");
-
-            }
-        });
-
-        HP_FA_EVENTS = findViewById(R.id.hp_fa_events);
-
-        HP_FA_GK = findViewById(R.id.hp_fa_gk);
-
-        HP_FA_IDEAS = findViewById(R.id.hp_fa_ideas);
-
-        HP_FA_MATERIALS = findViewById(R.id.hp_fa_materials);
-
-        HP_FA_TAT = findViewById(R.id.hp_fa_tat);
-
-        HP_FA_QNA = findViewById(R.id.hp_fa_qna);
-
-        HP_FA_GK.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent gk = new Intent(HomePage.this, PostItem.class);
-                gk.putExtra("type", "GK");
-                startActivity(gk);
-
-            }
-        });
-
-        HP_FA_QNA.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent qna = new Intent(HomePage.this, PostItem.class);
-                qna.putExtra("type", "QNA");
-                startActivity(qna);
-
-            }
-        });
-
-        HP_FA_MATERIALS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent materials = new Intent(HomePage.this, PostItem.class);
-                materials.putExtra("type", "Materials");
-                startActivity(materials);
-
-            }
-        });
-
-        HP_FA_IDEAS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent ideas = new Intent(HomePage.this, PostItem.class);
-                ideas.putExtra("type", "Ideas");
-                startActivity(ideas);
-
-            }
-        });
-
-        HP_FA_TAT.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent tat = new Intent(HomePage.this, PostItem.class);
-                tat.putExtra("type", "Teach");
-                startActivity(tat);
-
-            }
-        });
-
-        HP_FA_EVENTS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent events = new Intent(HomePage.this, PostItem.class);
-                events.putExtra("type", "Events");
-                startActivity(events);
-
-            }
-        });
+        }
 
         if(basicFunctions.isConnectingToInternet())
-            getInitialPostsData();
+            getCount();
 
-        else {
+        else{
 
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which){
-
                         case DialogInterface.BUTTON_POSITIVE:
 
-                            if(basicFunctions.isConnectingToInternet())
-                                getInitialPostsData();
-
-                            else {
-
-                                Toast.makeText(HomePage.this,
-                                        "No Internet Connection. Try again later !",
-                                        Toast.LENGTH_LONG).show();
-
-                                dialog.dismiss();
-
-                            }
-
-                            break;
-
-                        case DialogInterface.BUTTON_NEGATIVE:
-
-                            Toast.makeText(HomePage.this,
-                                    "No Internet Connection. Try again later !",
-                                    Toast.LENGTH_LONG).show();
-
-                            dialog.dismiss();
+                            Intent intent = new Intent(HomePage.this, HomePage.class);
+                            startActivity(intent);
 
                             break;
 
@@ -262,25 +118,58 @@ public class HomePage extends AppCompatActivity {
                 }
             };
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this);
-            builder.setMessage("No Internet Connection. Try again ?")
-                    .setPositiveButton("Yes", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Network Failure : Please check your Internet Connection !")
+                    .setPositiveButton("Try Again ... ", dialogClickListener).show();
 
         }
+
+        LeftAndRightDrawers = new SimpleSideDrawer(this);
+        LeftAndRightDrawers.setLeftBehindContentView(R.layout.activity_menu);
+        LeftAndRightDrawers.setRightBehindContentView(R.layout.activity_homepage_filters);
+
+        ImageButton leftMenuBtn = (ImageButton) findViewById(R.id.homepage_left_menu_btn);
+
+        ImageButton rightMenuBtn = (ImageButton) findViewById(R.id.homepage_right_menu_btn);
+
+        leftMenuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LeftAndRightDrawers.toggleLeftDrawer();
+
+            }
+        });
+
+        rightMenuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LeftAndRightDrawers.toggleRightDrawer();
+
+            }
+        });
+
+
+        IB_DASHBOARD = (Button) findViewById(R.id.homepage_dashboard_button);
+
+        IB_DASHBOARD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(HomePage.this, Dashboard.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
 
-    private void getInitialPostsData() {
+    private void getCount() {
 
-        pDialog = ProgressDialog.show(HomePage.this, "", "Fetching Posts ... ", false, false);
-
-        StringRequest stringRequest = new StringRequest(BasicFunctions.GET_ALL_POSTS + 0, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(EndPoints.GET_COUNT + basicFunctions.getUser_id(), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
-                showList_InitalPosts(response);
+                showList_Count(response);
 
             }
         },
@@ -299,476 +188,154 @@ public class HomePage extends AppCompatActivity {
 
         RequestQueue requestQueue = Volley.newRequestQueue(HomePage.this);
         requestQueue.add(stringRequest);
-
     }
 
 
-    protected void showList_InitalPosts(String response) {
+    @SuppressWarnings("ResourceType")
+    protected void showList_Count(String response) {
 
-        String hp_id;
-        String hp_title;
-        String hp_desc;
-        String hp_picture;
-        String hp_type;
-        String hp_timestamp;
-        String hp_username;
-        String hp_userimage;
+        String notification_count;
+        String chat_count;
 
         try {
             JSONObject jsonObj = new JSONObject(response);
-            HomePagePostArray = jsonObj.getJSONArray(basicFunctions.JSON_ARRAY);
+            CountArray = jsonObj.getJSONArray(basicFunctions.JSON_ARRAY);
+            JSONObject jsonObject = CountArray.getJSONObject(0);
 
-            post.setTotal(0);
+            notification_count = jsonObject.getString(basicFunctions.KEY_NOTIFICATION_COUNT);
+            chat_count = jsonObject.getString(basicFunctions.KEY_CHAT_COUNT);
 
-            for (int i = 0; i < HomePagePostArray.length(); i++) {
+            unReadNotificationCount = Integer.parseInt(notification_count);
 
-                JSONObject jsonObject = HomePagePostArray.getJSONObject(i);
-
-                hp_id = jsonObject.getString(basicFunctions.KEY_POST_ID);
-                hp_type = jsonObject.getString(basicFunctions.KEY_POST_TYPE);
-                hp_title = jsonObject.getString(basicFunctions.KEY_POST_TITLE);
-                hp_desc = jsonObject.getString(basicFunctions.KEY_POST_DESC);
-                hp_picture = jsonObject.getString(basicFunctions.KEY_POST_IMAGE);
-                hp_timestamp = jsonObject.getString(basicFunctions.KEY_POST_TIMESTAMP);
-                hp_username = jsonObject.getString(basicFunctions.KEY_USER_USERNAME);
-                hp_userimage = jsonObject.getString(basicFunctions.KEY_USER_IMAGE);
-
-                Post data = new Post();
-
-                data.setDetails(hp_id, hp_picture, hp_title, hp_desc,
-                        hp_type, hp_timestamp, hp_username, hp_userimage);
-
-                mHomePagePosts.add(data);
-
-                data.setTotal(mHomePagePosts.size());
-
-            }
+            unReadMessageCount = Integer.parseInt(chat_count);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if (post.getTotal() == 0)
-            Toast.makeText(HomePage.this, "No Posts to display !", Toast.LENGTH_LONG).show();
+        LeftMenuItemList = new ArrayList<>();
+        leftNavMenuTitles = getResources().getStringArray(R.array.menu_titles);
+        leftNavMenuIcons = getResources().obtainTypedArray(R.array.menu_icons);
 
-        linearLayoutManager = new LinearLayoutManager(HomePage.this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        homePagePostsAdapter = new HomePagePostsAdapter(HomePage.this);
-        recyclerView.setAdapter(homePagePostsAdapter);
+        LeftMenuItemList.add(new MenuListItem(leftNavMenuTitles[0], leftNavMenuIcons.getResourceId(0, -1)));
+        LeftMenuItemList.add(new MenuListItem(leftNavMenuTitles[1], leftNavMenuIcons.getResourceId(1, -1)));
+        LeftMenuItemList.add(new MenuListItem(leftNavMenuTitles[2], leftNavMenuIcons.getResourceId(2, -1)));
+        LeftMenuItemList.add(new MenuListItem(leftNavMenuTitles[3], leftNavMenuIcons.getResourceId(3, -1)));
+        LeftMenuItemList.add(new MenuListItem(leftNavMenuTitles[4], leftNavMenuIcons.getResourceId(4, -1)));
 
-        homePagePostsAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore() {
+        leftNavMenuIcons.recycle();
 
-                mHomePagePosts.add(null);
-                homePagePostsAdapter.notifyItemInserted(mHomePagePosts.size() - 1);
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        pDialog = ProgressDialog.show(HomePage.this, "", "Fetching Posts ... ", false, false);
-
-                        mHomePagePosts.remove(mHomePagePosts.size() - 1);
-                        homePagePostsAdapter.notifyItemRemoved(mHomePagePosts.size());
-
-                        int index = mHomePagePosts.size();
-
-                        getMorePostsData(index);
-
-                    }
-                }, 1000);
-            }
-        });
+        leftMenuList = (ListView) findViewById(R.id.menu_list);
+        LeftMenuListAdapter = new MenuListAdapter(this, LeftMenuItemList);
+        leftMenuList.setAdapter(LeftMenuListAdapter);
+        leftMenuList.setOnItemClickListener(new SlideMenuClickListener());
 
 
-        SEARCH_BAR.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void afterTextChanged(Editable arg0) {
-                // TODO Auto-generated method stub
-
-                searchText = SEARCH_BAR.getText().toString().toLowerCase(Locale.getDefault());
-
-                if(TextUtils.isEmpty(searchText)) {
-
-                    search_list.setVisibility(View.GONE);
-
-                    recyclerView.setVisibility(View.VISIBLE);
-
-                }
-
-                else {
-
-                    searcharraylist.clear();
-                    searchData(searchText, 0);
-
-                }
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1,
-                                          int arg2, int arg3) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-                                      int arg3) {
-                // TODO Auto-generated method stub
-            }
-        });
-
-        pDialog.dismiss();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.homepage_root_layout, HomePageFragment.newInstance(), "ItemsList")
+                .commit();
 
     }
 
 
-    private class HomePagePostsAdapter extends RecyclerView.Adapter<ViewHolder> {
+    @Override
+    public void onHomePageFragmentItemSelected(String id) {
 
-        private LayoutInflater mLayoutInflater;
-        private OnLoadMoreListener mOnLoadMoreListener;
+        Intent intent = new Intent(HomePage.this, PostView.class);
+        intent.putExtra("id", id);
+        startActivity(intent);
 
-        private boolean isLoading;
-        private int visibleThreshold = 3;
-        private int lastVisibleItem, totalItemCount;
+    }
 
-        private HomePagePostsAdapter(Context context) {
 
-            mLayoutInflater = LayoutInflater.from(context);
-
-            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-
-                    if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold) && load_over == 0) {
-                        if (mOnLoadMoreListener != null) {
-                            mOnLoadMoreListener.onLoadMore();
-                        }
-                        isLoading = true;
-                    }
-                }
-            });
-        }
-
-        private void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
-            this.mOnLoadMoreListener = mOnLoadMoreListener;
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-
-            View view = mLayoutInflater.inflate(R.layout.activity_hp_item, viewGroup, false);
-            return new ViewHolder(view);
-
-        }
+    private class SlideMenuClickListener implements
+            ListView.OnItemClickListener {
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-
-            final Post data = mHomePagePosts.get(position);
-
-            viewHolder.setData(data.getId(), data.getImage(),
-                    data.getTitle(), data.getDescription(), data.getType(),
-                    data.getTimestamp(), data.getUsername(), data.getUserimage());
-
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    Intent intent = new Intent(HomePage.this, PostView.class);
-                    intent.putExtra("id", data.getId());
-                    startActivity(intent);
-
-                }
-            });
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return post.getTotal();
-        }
-
-        private void setLoaded() {
-            isLoading = false;
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                                long id) {
+                    displayView(position);
         }
 
     }
 
 
-    private interface OnLoadMoreListener {
-        void onLoadMore();
-    }
+    private void displayView(int position) {
 
+        switch (position) {
 
-    private class ViewHolder extends RecyclerView.ViewHolder {
+            case 0:
 
-        private ImageView mImageView;
-        private CircularImageView mUserImageView;
-        private LinearLayout mLinearLayout;
-        private TextView mTitleTextView, mPostDateTextView,mDescriptionTextView, mUserNameTextView, mReportTextView;
-        private LinearLayout mUserProfile;
-        private ImageButton mDeleteButton;
+                Intent Profile = new Intent(HomePage.this, Profile.class);
+                Profile.putExtra("type", "SELF");
+                startActivity(Profile);
 
-        private ViewHolder(View itemView) {
-            super(itemView);
+                break;
 
-            mLinearLayout = itemView.findViewById(R.id.hp_item_layout);
-            mImageView = itemView.findViewById(R.id.hp_item_image);
-            mTitleTextView = itemView.findViewById(R.id.hp_item_title);
-            mPostDateTextView = itemView.findViewById(R.id.hp_item_date);
-            mDescriptionTextView = itemView.findViewById(R.id.hp_item_description);
-            mUserNameTextView = itemView.findViewById(R.id.hp_user_name);
-            mUserImageView = itemView.findViewById(R.id.hp_user_image);
-            mUserProfile = itemView.findViewById(R.id.hp_user);
-            mDeleteButton = itemView.findViewById(R.id.hp_delete);
-            mReportTextView = itemView.findViewById(R.id.hp_report);
+            case 1:
 
-        }
+                Intent Chat = new Intent(HomePage.this, Messenger.class);
+                startActivity(Chat);
 
-        private void setData(final String id,String image, final String title,String description, final String type,
-                             String timestamp,final String username, String userimage) {
+                break;
 
-            if(username.equals(basicFunctions.getUser_name()))
-                mDeleteButton.setVisibility(View.VISIBLE);
+            case 2:
 
-            else mDeleteButton.setVisibility(View.GONE);
+                Intent Notification = new Intent(HomePage.this, Notifications.class);
+                startActivity(Notification);
 
-            if(username.equals(basicFunctions.getUser_name()))
-                mReportTextView.setVisibility(View.GONE);
+                break;
 
-            else mReportTextView.setVisibility(View.VISIBLE);
+            case 3:
 
-            switch(type){
+                Intent Contact = new Intent(HomePage.this, ContactUs.class);
+                startActivity(Contact);
 
-                case "GK":
+                break;
 
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(HomePage.this, R.color.colorGK));
-                    break;
+            case 4:
 
-                case "QNA":
+                LogoutBackgroundTask lb = new LogoutBackgroundTask(HomePage.this);
+                lb.execute("logout", basicFunctions.getUser_id());
 
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(HomePage.this, R.color.colorQnA));
-                    break;
+                break;
 
-                case "Materials":
+            default:
 
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(HomePage.this, R.color.colorStudyMaterials));
-                    break;
-
-                case "Teach":
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(HomePage.this, R.color.colorTeach));
-                    break;
-
-                case "Ideas":
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(HomePage.this, R.color.colorIdeas));
-                    break;
-
-                case "Events":
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(HomePage.this, R.color.colorEvents));
-                    break;
-
-                default:
-
-                    mLinearLayout.setBackgroundColor(ContextCompat.getColor(HomePage.this, R.color.colorGK));
-                    break;
-
-            }
-
-            mTitleTextView.setText(title);
-            mDescriptionTextView.setText(description);
-            mPostDateTextView.setText(BasicFunctions.getTimeStamp(timestamp));
-            mUserNameTextView.setText(username);
-
-            if(!image.equals("")) {
-
-                mImageView.setVisibility(View.VISIBLE);
-
-                mImageView.setBackground(null);
-
-                Bitmap bm;
-
-                byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
-                bm = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                mImageView.setImageBitmap(Bitmap.createScaledBitmap(bm, 250, 250, false));
-
-            }
-
-            else {
-
-                mImageView.setVisibility(View.GONE);
-                mImageView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.mp_usercover, null));
-                mImageView.setImageResource(R.drawable.app_userbackground);
-
-            }
-
-            if(!userimage.equals("")) {
-
-                mUserImageView.setBackground(null);
-
-                byte[] decodedString = Base64.decode(userimage, Base64.DEFAULT);
-                Bitmap bm = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                mUserImageView.setImageBitmap(Bitmap.createScaledBitmap(bm, 60, 60, false));
-
-            }
-
-            else {
-
-                mUserImageView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.app_userimage, null));
-                mUserImageView.setImageResource(R.drawable.app_userbackground);
-
-            }
-
-            mUserProfile.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    Intent intent = new Intent(HomePage.this, Profile.class);
-                    intent.putExtra("type", username);
-                    startActivity(intent);
-                    HomePage.this.finish();
-
-                }
-            });
-
-            mDeleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    delete_post(id);
-
-                }
-            });
-
-            mReportTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    report(id, title);
-
-                }
-            });
+                break;
         }
     }
 
 
-    private void searchData(String searchText, final int index) {
-
-        pDialog = ProgressDialog.show(HomePage.this, "", "Fetching Posts ... ", false, false);
-
-        String url = BasicFunctions.SEARCH_FOR_POSTS + index + "&searchText=" + searchText + "&searchType=all";
-
-        url = url.replaceAll(" ", "%20");
-
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-
-                try {
-
-                    JSONObject jsonObj = new JSONObject(response);
-                    SearchPostArray = jsonObj.getJSONArray(basicFunctions.JSON_ARRAY);
-
-                    if (index == 0 && SearchPostArray.length() == 0) {
-
-                        search_list.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
-                        Toast.makeText(HomePage.this, "No Posts Found !", Toast.LENGTH_LONG).show();
-
-                    }
-
-                    else if(SearchPostArray.length() == 0)
-                        Toast.makeText(HomePage.this, "No More Posts Found !", Toast.LENGTH_LONG).show();
-
-                    else {
-
-                        search_list.setVisibility(View.VISIBLE);
-                        recyclerView.setVisibility(View.GONE);
-
-                    }
-
-                    for (int i = 0; i < SearchPostArray.length(); i++) {
-
-                        JSONObject jsonObject = SearchPostArray.getJSONObject(i);
-
-                        ItemList itemList = new ItemList(jsonObject.getString(basicFunctions.KEY_POST_ID),
-                                jsonObject.getString(basicFunctions.KEY_POST_IMAGE),
-                                jsonObject.getString(basicFunctions.KEY_POST_TITLE),
-                                jsonObject.getString(basicFunctions.KEY_POST_TYPE));
-
-                        searcharraylist.add(itemList);
-
-                    }
-
-                    SearchListAdapter = new ListViewAdapter(HomePage.this);
-                    search_list.setAdapter(SearchListAdapter);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(HomePage.this, error.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-
-        stringRequest.setRetryPolicy(
-                new DefaultRetryPolicy(
-                        0,
-                        -1,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        RequestQueue requestQueue = Volley.newRequestQueue(HomePage.this);
-        requestQueue.add(stringRequest);
-
-        pDialog.dismiss();
-
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 
 
-    private class ListViewAdapter extends BaseAdapter {
+    private class MenuListAdapter extends BaseAdapter {
 
-        Context mContext;
-        LayoutInflater inflater;
+        private Context context;
+        private ArrayList<HomePage.MenuListItem> menuListItems;
 
-        private ListViewAdapter(Context context) {
-            mContext = context;
-            inflater = LayoutInflater.from(mContext);
-        }
+        private MenuListAdapter(Context context, ArrayList<HomePage.MenuListItem> menuListItems){
 
-        private class ViewHolder {
-            TextView TV_TITLE;
-            TextView TV_TYPE;
-            CircularImageView IV_IMAGE;
-            Button B_SHOW_MORE;
+            this.context = context;
+            this.menuListItems = menuListItems;
         }
 
         @Override
         public int getCount() {
-            return searcharraylist.size();
+            return menuListItems.size();
         }
 
         @Override
-        public ItemList getItem(int position) {
-            return searcharraylist.get(position);
+        public Object getItem(int position) {
+            return menuListItems.get(position);
         }
 
         @Override
@@ -776,280 +343,178 @@ public class HomePage extends AppCompatActivity {
             return position;
         }
 
-        public View getView(final int position, View view, ViewGroup parent) {
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
 
-            final ViewHolder holder;
+            if (convertView == null) {
 
-            if (view == null) {
-
-                holder = new ViewHolder();
-                view = inflater.inflate(R.layout.activity_hp_search_item, parent, false);
-
-                holder.IV_IMAGE = view.findViewById(R.id.hp_search_image);
-                holder.TV_TITLE = view.findViewById(R.id.hp_search_title);
-                holder.TV_TYPE = view.findViewById(R.id.hp_search_type);
-                holder.TV_TYPE.setVisibility(View.VISIBLE);
-                holder.B_SHOW_MORE = view.findViewById(R.id.hp_search_more);
-                view.setTag(holder);
-
-            }
-
-            else  holder = (ViewHolder) view.getTag();
-
-            holder.TV_TITLE.setText(searcharraylist.get(position).getTitle());
-
-            String type;
-
-            if(searcharraylist.get(position).getType().equals("GK"))  type = "General Digest";
-
-            else if(searcharraylist.get(position).getType().equals("QNA"))  type = "Q N A Section";
-
-            else if(searcharraylist.get(position).getType().equals("Materials"))  type = "Study Materials";
-
-            else if(searcharraylist.get(position).getType().equals("Ideas"))  type = "Ideas Galore";
-
-            else if(searcharraylist.get(position).getType().equals("Teach")) type = "Teach a Topic";
-
-            else if(searcharraylist.get(position).getType().equals("Events")) type = "Events and Invites";
-
-            else type = "General Digest";
-
-
-            holder.TV_TYPE.setText(type);
-
-            if(!searcharraylist.get(position).getImage().equals("")) {
-
-                holder.IV_IMAGE.setBackground(null);
-
-                byte[] decodedString = Base64.decode(searcharraylist.get(position).getImage(), Base64.DEFAULT);
-                Bitmap bm = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                holder.IV_IMAGE.setImageBitmap(Bitmap.createScaledBitmap(bm, 50, 50, false));
-
-            }
-
-            else {
-
-                holder.IV_IMAGE.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.mp_usercover, null));
-                holder.IV_IMAGE.setImageResource(R.drawable.app_userbackground);
+                LayoutInflater mInflater = (LayoutInflater)
+                        context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+                convertView = mInflater.inflate(R.layout.activity_menu_list_item, parent, false);
 
             }
 
 
-            view.setOnClickListener(new View.OnClickListener() {
+            ImageView imgIcon = (ImageView) convertView.findViewById(R.id.menu_list_item_icon);
+            TextView txtTitle = (TextView) convertView.findViewById(R.id.menu_list_item_title);
 
-                @Override
-                public void onClick(View arg0) {
+            TextView txtCount = (TextView) convertView.findViewById(R.id.menu_list_item_counter);
 
-                    Intent intent = new Intent(HomePage.this, PostView.class);
-                    intent.putExtra("id", searcharraylist.get(position).getId());
-                    startActivity(intent);
+            imgIcon.setImageResource(menuListItems.get(position).getIcon());
+            txtTitle.setText(menuListItems.get(position).getTitle());
 
-                }
-            });
 
-            if(position == (searcharraylist.size() - 1))
-                holder.B_SHOW_MORE.setVisibility(View.VISIBLE);
+            if(menuListItems.get(position).getTitle().equals("FEBULOUS MESSENGER"))
+                if(!(unReadMessageCount == 0)){
 
-            holder.B_SHOW_MORE.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                    txtCount.setVisibility(View.VISIBLE);
 
-                    searchData(searchText, searcharraylist.size());
-                }
-            });
+                    txtCount.setText(String.valueOf(unReadMessageCount));
 
-            return view;
+            }
+
+            if(menuListItems.get(position).getTitle().equals("NOTIFICATIONS"))
+                if(!(unReadNotificationCount == 0)){
+
+                    txtCount.setVisibility(View.VISIBLE);
+
+                    txtCount.setText(String.valueOf(unReadNotificationCount));
+
+            }
+
+            return convertView;
         }
-
     }
 
 
-    private void getMorePostsData(int index) {
+    private class MenuListItem {
 
-        StringRequest stringRequest = new StringRequest(BasicFunctions.GET_ALL_POSTS + index, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                showList_MorePosts(response);
-
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(HomePage.this, error.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        stringRequest.setRetryPolicy(
-                new DefaultRetryPolicy(
-                        0,
-                        -1,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        RequestQueue requestQueue = Volley.newRequestQueue(HomePage.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-
-    protected void showList_MorePosts(String response) {
-
-        String hp_id;
-        String hp_title;
-        String hp_desc;
-        String hp_picture_1;
-        String hp_type;
-        String hp_timestamp;
-        String hp_username;
-        String hp_userimage;
-
-        try {
-
-            JSONObject jsonObj = new JSONObject(response);
-            HomePagePostArray = jsonObj.getJSONArray(basicFunctions.JSON_ARRAY);
-
-            if(HomePagePostArray.length() == 0) {
-
-                Toast.makeText(HomePage.this, "No more Posts to display !", Toast.LENGTH_LONG).show();
-                load_over = 1;
-
-            }
-
-            for (int i = 0; i < HomePagePostArray.length(); i++) {
-
-                JSONObject jsonObject = HomePagePostArray.getJSONObject(i);
-
-                hp_id = jsonObject.getString(basicFunctions.KEY_POST_ID);
-                hp_type = jsonObject.getString(basicFunctions.KEY_POST_TYPE);
-                hp_title = jsonObject.getString(basicFunctions.KEY_POST_TITLE);
-                hp_desc = jsonObject.getString(basicFunctions.KEY_POST_DESC);
-                hp_picture_1 = jsonObject.getString(basicFunctions.KEY_POST_IMAGE);
-                hp_timestamp = jsonObject.getString(basicFunctions.KEY_POST_TIMESTAMP);
-                hp_username = jsonObject.getString(basicFunctions.KEY_USER_USERNAME);
-                hp_userimage = jsonObject.getString(basicFunctions.KEY_USER_IMAGE);
-
-                Post data = new Post();
-
-                data.setDetails(hp_id, hp_picture_1, hp_title, hp_desc,
-                        hp_type, hp_timestamp, hp_username, hp_userimage);
-
-                mHomePagePosts.add(data);
-
-                data.setTotal(mHomePagePosts.size());
-
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        homePagePostsAdapter.notifyDataSetChanged();
-        homePagePostsAdapter.setLoaded();
-
-        pDialog.dismiss();
-
-    }
-
-    private class ItemList {
-
-        private String id;
-        private String image;
         private String title;
-        private String type;
+        private int icon;
 
-        private ItemList(String id, String image, String title, String type) {
 
-            this.id = id;
-            this.image = image;
+        private MenuListItem(String title, int icon){
+
             this.title = title;
-            this.type = type;
+            this.icon = icon;
 
         }
 
-        private String getId() {
-            return this.id;
-        }
-
-        private String getImage() {
-            return this.image;
-        }
-
-        private String getTitle() {
+        private String getTitle(){
             return this.title;
         }
 
-        private String getType() {
-            return this.type;
+        private int getIcon(){
+            return this.icon;
         }
 
     }
 
 
-    private void delete_post(final String item_id){
+    private class LogoutBackgroundTask extends AsyncTask<String, Void, String> {
 
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        ProgressDialog pDialog;
+        Context ctx;
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        LogoutBackgroundTask(Context ctx) {
+            this.ctx = ctx;
+        }
 
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
+        @Override
+        public void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(HomePage.this);
+            pDialog.setMessage("Logging Out ... ");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
 
-                        String method = "deletepost";
+        @Override
+        protected String doInBackground(String... params) {
 
-                        basicFunctions.performTask(method, item_id, "");
+            String method = params[0];
 
-                        Intent intent = new Intent(HomePage.this, HomePage.class);
-                        startActivity(intent);
+            if (method.equals("logout")) {
 
-                        break;
+                String userid = params[1];
 
-                    case DialogInterface.BUTTON_NEGATIVE:
+                try {
 
-                        Toast.makeText(HomePage.this,"Deletion Cancelled !",Toast.LENGTH_LONG).show();
+                    URL url = new URL(EndPoints.LOGOUT);
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    OutputStream OS = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
 
-                        break;
+                    String data = URLEncoder.encode("userid", "UTF-8") + "=" + URLEncoder.encode(userid, "UTF-8");
+
+                    bufferedWriter.write(data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+                    OS.close();
+                    InputStream IS = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(IS,"iso-8859-1"));
+                    String response = "";
+                    String line;
+
+                    while((line = bufferedReader.readLine())!=null)  {
+                        response += line;
+                    }
+                    bufferedReader.close();
+                    IS.close();
+                    httpURLConnection.disconnect();
+                    return response;
+
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-        };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this);
-        builder.setMessage("Are you sure you want to delete this Post ?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
-
-    }
+            return null;
+        }
 
 
-    private void report(final String item_id, final String item_title){
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
 
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        protected void onPostExecute(String result) {
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+            switch (result) {
 
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
+                case "Logout Successful !":
 
-                        String method = "reportpost";
+                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                    pDialog.dismiss();
 
-                        basicFunctions.performTask(method, item_id, "P : "+item_title);
+                    basicFunctions.setLogin(false);
 
-                        break;
+                    basicFunctions.setUserDataNull();
 
-                    case DialogInterface.BUTTON_NEGATIVE:
+                    Intent Logout = new Intent(HomePage.this, Login.class);
+                    startActivity(Logout);
 
-                        Toast.makeText(HomePage.this,"Reporting Cancelled !",Toast.LENGTH_LONG).show();
+                    break;
 
-                        break;
-                }
+                case "Logout Failed !":
+
+                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                    pDialog.dismiss();
+
+                    break;
+
+                default:
+
+                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                    pDialog.dismiss();
+
+                    break;
             }
-        };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(HomePage.this);
-        builder.setMessage("Are you sure you want to report this Post ?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
+        }
 
     }
 

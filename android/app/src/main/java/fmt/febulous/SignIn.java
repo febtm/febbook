@@ -1,54 +1,52 @@
 package fmt.febulous;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.view.Menu;
 import android.view.View;
-import android.webkit.MimeTypeMap;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.annotations.Since;
 
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,13 +59,17 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 
 import fmt.febulous.helper.BasicFunctions;
-import fmt.febulous.helper.LSRMenu;
+import fmt.febulous.helper.EndPoints;
 
 
 public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
 
-    EditText ET_USERNAME, ET_EMAIL, ET_PASSWORD;
+    EditText ET_USERNAME;
+    EditText ET_EMAIL;
+    EditText ET_PASSWORD;
+    Spinner ET_COURSE;
+    Spinner ET_USERTYPE;
 
     CheckBox CB_SHOW;
 
@@ -80,83 +82,64 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
 
     private ProgressDialog pDialog;
 
-    String si_email, si_username, si_password, si_device_token;
+    String si_email, si_username, si_password, si_course, si_usertype, si_device_token;
 
-    GoogleSignInClient mGoogleSignInClient;
+    GoogleApiClient mGoogleApiClient;
 
     private static final int RC_SIGN_IN = 9001;
 
+    String actionbar_title;
+
     private BasicFunctions basicFunctions;
 
-    private String TANDC_URL = "https://febtech.000webhostapp.com/FebTechT&C.pdf";
-
-    private LSRMenu lsrMenu;
-
-    ImageButton MENU_BUTTON, SI_USERNAME_CANCEL, SI_EMAIL_CANCEL, SI_PASSWORD_CANCEL;
+    ArrayAdapter<String> usertype, usercourse;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
 
         basicFunctions = new BasicFunctions(this);
 
-        ET_USERNAME = findViewById(R.id.si_username);
-        ET_EMAIL = findViewById(R.id.si_email);
-        ET_PASSWORD = findViewById(R.id.si_password);
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
-        CB_SHOW = findViewById(R.id.si_show_password);
+        setContentView(R.layout.activity_signin);
 
-        B_SIGNIN = findViewById(R.id.si_sign_in);
-        B_SIGNIN_TERMS = findViewById(R.id.si_tandc);
-        B_GOOGLE = findViewById(R.id.si_sign_in_google);
-        B_FACEBOOK = findViewById(R.id.si_sign_in_fb);
+        actionbar_title="\tSIGN UP FOR FEBULOUS";
+        setTitle(actionbar_title);
 
-        lsrMenu = new LSRMenu(SignIn.this);
+        ET_USERNAME = (EditText) findViewById(R.id.signin_username);
+        ET_EMAIL = (EditText) findViewById(R.id.signin_email);
+        ET_PASSWORD = (EditText) findViewById(R.id.signin_password);
+        ET_COURSE = (Spinner) findViewById(R.id.signin_course);
+        ET_USERTYPE = (Spinner) findViewById(R.id.signin_usertype);
 
-        MENU_BUTTON = findViewById(R.id.si_menu);
+        CB_SHOW = (CheckBox) findViewById(R.id.signin_show_password);
 
-        MENU_BUTTON.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lsrMenu.LeftDrawer.toggleLeftDrawer();
+        B_SIGNIN = (Button) findViewById(R.id.signin_register);
+        B_SIGNIN_TERMS = (Button) findViewById(R.id.signin_terms);
+        B_GOOGLE = (ImageButton) findViewById(R.id.signin_google);
+        B_FACEBOOK = (ImageButton) findViewById(R.id.signin_facebook);
 
-            }
-        });
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        basicFunctions.storeFCMNotDeviceToken(refreshedToken);
 
-        SI_USERNAME_CANCEL = findViewById(R.id.si_username_cancel);
+        usertype = new ArrayAdapter<>(
+                this, R.layout.activity_signin_spinner, basicFunctions.USERTYPE
+        );
+        usertype.setDropDownViewResource(R.layout.activity_signin_spinner);
 
-        SI_USERNAME_CANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        usercourse = new ArrayAdapter<>(
+                this, R.layout.activity_signin_spinner, basicFunctions.USERCOURSE
+        );
+        usercourse.setDropDownViewResource(R.layout.activity_signin_spinner);
 
-                ET_USERNAME.setText("");
 
-            }
-        });
+        ET_USERTYPE.setAdapter(usertype);
 
-        SI_EMAIL_CANCEL = findViewById(R.id.si_email_cancel);
+        ET_COURSE.setAdapter(usercourse);
 
-        SI_EMAIL_CANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ET_EMAIL.setText("");
-
-            }
-        });
-
-        SI_PASSWORD_CANCEL = findViewById(R.id.si_password_cancel);
-
-        SI_PASSWORD_CANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ET_PASSWORD.setText("");
-
-            }
-        });
 
         B_SIGNIN.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,8 +148,11 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
                 si_username = ET_USERNAME.getText().toString();
                 si_email = ET_EMAIL.getText().toString();
                 si_password = ET_PASSWORD.getText().toString();
+                si_usertype = ET_USERTYPE.getSelectedItem().toString();
+                si_course = ET_COURSE.getSelectedItem().toString();
 
                 si_device_token = basicFunctions.getFCMNotDeviceToken();
+
 
                 if (TextUtils.isEmpty(si_username))
                     ET_USERNAME.setError("Type in your Username !");
@@ -177,13 +163,24 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
                 else if (TextUtils.isEmpty(si_password))
                     ET_PASSWORD.setError("Type in your Password !");
 
+                else if (si_usertype.equals("USER TYPE"))
+                    Toast.makeText(SignIn.this, "Kindly select your User Type !", Toast.LENGTH_LONG).show();
+
+                else if (si_course.equals("COURSE TYPE"))
+                    Toast.makeText(SignIn.this, "Kindly select your Course Type !", Toast.LENGTH_LONG).show();
+
                 else if (si_device_token == null)
                     Toast.makeText(SignIn.this, "Device Registration Failed ! Please try Signing In again later !", Toast.LENGTH_LONG).show();
 
                 else {
 
-                    if(basicFunctions.isConnectingToInternet())
-                        signIn();
+                    if(basicFunctions.isConnectingToInternet()) {
+
+                        String method = "signin";
+                        SignInBackgroundTask signinBackgroundTask = new SignInBackgroundTask(SignIn.this);
+                        signinBackgroundTask.execute(method, si_username, si_email, si_password, si_usertype, si_course, si_device_token);
+
+                    }
 
                     else{
 
@@ -191,31 +188,10 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which){
-
                                     case DialogInterface.BUTTON_POSITIVE:
 
-                                        if(basicFunctions.isConnectingToInternet())
-                                            signIn();
-
-                                        else {
-
-                                            Toast.makeText(SignIn.this,
-                                                    "No Internet Connection. Try again later !",
-                                                    Toast.LENGTH_LONG).show();
-
-                                            dialog.dismiss();
-
-                                        }
-
-                                        break;
-
-                                    case DialogInterface.BUTTON_NEGATIVE:
-
-                                        Toast.makeText(SignIn.this,
-                                                "No Internet Connection. Try again later !",
-                                                Toast.LENGTH_LONG).show();
-
-                                        dialog.dismiss();
+                                        Intent intent = new Intent(SignIn.this, SignIn.class);
+                                        startActivity(intent);
 
                                         break;
 
@@ -224,9 +200,8 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
                         };
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(SignIn.this);
-                        builder.setMessage("No Internet Connection. Try again ?")
-                                .setPositiveButton("Yes", dialogClickListener)
-                                .setNegativeButton("No", dialogClickListener).show();
+                        builder.setMessage("Network Failure : Please check your Internet Connection !")
+                                .setPositiveButton("Try Again ... ", dialogClickListener).show();
 
                     }
 
@@ -238,124 +213,120 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
             @Override
             public void onClick(View v) {
 
-                if (ActivityCompat.checkSelfPermission(SignIn.this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(SignIn.this,
-                                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
-                    ActivityCompat.requestPermissions(SignIn.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-
-                }
-
-                else
-                    new DownloadFileFromURL().execute(TANDC_URL);
+                new DownloadFileFromURL().execute("http://www.febulous.esy.es/FebulousT&C.pdf");
             }
         });
 
         callbackManager = CallbackManager.Factory.create();
 
-        fb_login_Button = findViewById(R.id.si_fb_button);
+        fb_login_Button = (LoginButton)findViewById(R.id.fb_login_button);
 
-        fb_login_Button.setReadPermissions("public_profile", "email");
+        fb_login_Button.setReadPermissions("public_profile", "email", "user_friends");
 
-        final SignInButton signInButton = findViewById(R.id.si_google_button);
+        final SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
 
         B_FACEBOOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String app_id = "com.facebook.katana";
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 
-                if(basicFunctions.isAppInstalled(app_id)) {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                    pDialog = new ProgressDialog(SignIn.this);
-                    pDialog.setMessage("Fetching Facebook Profile ... ");
-                    pDialog.show();
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
 
-                    fb_login_Button.performClick();
+                                pDialog = new ProgressDialog(SignIn.this);
+                                pDialog.setMessage("Loading ... ");
+                                pDialog.show();
 
-                    fb_login_Button.setPressed(true);
+                                fb_login_Button.performClick();
 
-                    fb_login_Button.invalidate();
+                                fb_login_Button.setPressed(true);
 
-                    fb_login_Button.registerCallback(callbackManager, mCallBack);
+                                fb_login_Button.invalidate();
 
-                    fb_login_Button.setPressed(false);
+                                fb_login_Button.registerCallback(callbackManager, mCallBack);
 
-                    fb_login_Button.invalidate();
+                                fb_login_Button.setPressed(false);
 
-                }
+                                fb_login_Button.invalidate();
 
-                else {
+                                break;
 
-                    try {
+                            case DialogInterface.BUTTON_NEGATIVE:
 
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + app_id)));
+                                Toast.makeText(getApplicationContext(),"Kindly install the Facebook App to enable Facebook Login !",Toast.LENGTH_LONG).show();
 
-                    } catch (android.content.ActivityNotFoundException anfe) {
-
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + app_id)));
-
+                                break;
+                        }
                     }
+                };
 
-                    Toast.makeText(getApplicationContext(),"Kindly install the Facebook App to enable Facebook Login !", Toast.LENGTH_LONG).show();
-
-                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(SignIn.this);
+                builder.setMessage("Is the Facebook App installed on your device ?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
 
             }
         });
+
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
 
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
 
         B_GOOGLE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String app_id = "com.google.android.googlequicksearchbox";
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 
-                if(basicFunctions.isAppInstalled(app_id)){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                    pDialog = new ProgressDialog(SignIn.this);
-                    pDialog.setMessage("Fetching Google Profile ... ");
-                    pDialog.show();
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
 
-                    signInButton.performClick();
+                                pDialog = new ProgressDialog(SignIn.this);
+                                pDialog.setMessage("Loading ... ");
+                                pDialog.show();
 
-                    signInButton.setPressed(true);
+                                signInButton.performClick();
 
-                    signInButton.invalidate();
+                                signInButton.setPressed(true);
 
-                    googleSignIn();
+                                signInButton.invalidate();
 
-                    signInButton.setPressed(false);
+                                signIn();
 
-                    signInButton.invalidate();
+                                signInButton.setPressed(false);
 
-                }
+                                signInButton.invalidate();
 
-                else {
+                                break;
 
-                    try {
+                            case DialogInterface.BUTTON_NEGATIVE:
 
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + app_id)));
+                                Toast.makeText(getApplicationContext(),"Kindly install the Google App to enable Google Login !",Toast.LENGTH_LONG).show();
 
-                    } catch (android.content.ActivityNotFoundException anfe) {
-
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + app_id)));
-
+                                break;
+                        }
                     }
+                };
 
-                    Toast.makeText(getApplicationContext(),"Kindly install the Google App to enable Google Login !", Toast.LENGTH_LONG).show();
-
-                }
-
+                AlertDialog.Builder builder = new AlertDialog.Builder(SignIn.this);
+                builder.setMessage("Is the Google App installed on your device ?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
 
             }
         });
+
 
         CB_SHOW.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -371,42 +342,9 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
     }
 
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-
-        switch (requestCode) {
-
-            case 0: {
-
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    new DownloadFileFromURL().execute(TANDC_URL);
-
-                else
-                    Toast.makeText(SignIn.this, "Kindly grant Storage permission to continue !", Toast.LENGTH_LONG).show();
-
-                break;
-            }
-
-            default:
-                break;
-
-        }
-    }
-
-
-    private void signIn(){
-
-        String method = "signin";
-        SignInBackgroundTask signinBackgroundTask = new SignInBackgroundTask(SignIn.this);
-        signinBackgroundTask.execute(method, si_username, si_email, si_password, si_device_token);
-
-    }
-
-    private void googleSignIn() {
-
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+    private void signIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
-
     }
 
     @Override
@@ -422,43 +360,34 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
         }
     }
 
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
 
-        try {
+    private void handleSignInResult(GoogleSignInResult result) {
 
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+        if (result.isSuccess()) {
 
-            if (account != null) {
-
-                ET_USERNAME.setText(account.getDisplayName().replace(" ", ""));
-                ET_EMAIL.setText(account.getEmail());
-
-            }
+            GoogleSignInAccount acct = result.getSignInAccount();
+            ET_USERNAME.setText(acct.getDisplayName().replace(" ", ""));
+            ET_EMAIL.setText(acct.getEmail());
 
             pDialog.dismiss();
 
             Toast.makeText(SignIn.this,
-                    "We have accessed your details from your Google Account. Kindly edit them appropriately and Sign In !", Toast.LENGTH_LONG).show();
-
-        } catch (ApiException e) {
-
-            Toast.makeText(SignIn.this,
-                    "Google Sign In Failed !", Toast.LENGTH_LONG).show();
+                    "We have accessed some details from your Google Account. Kindly fill in the other details and Sign In !", Toast.LENGTH_LONG).show();
 
         }
     }
 
+
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(this,connectionResult.toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this,connectionResult.toString(),Toast.LENGTH_LONG).show();
     }
+
 
     private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
         @Override
@@ -480,7 +409,7 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
                                 pDialog.dismiss();
 
                                 Toast.makeText(SignIn.this,
-                                        "We have accessed your details from your Facebook Account. Kindly edit them appropriately and Sign In !", Toast.LENGTH_LONG).show();
+                                        "We have accessed some details from your Facebook Account. Kindly fill in the other details and Sign In !", Toast.LENGTH_LONG).show();
 
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -509,8 +438,16 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
     };
 
 
-    @SuppressLint("StaticFieldLeak")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_normal, menu);
+        return true;
+    }
+
+
     private class SignInBackgroundTask extends AsyncTask<String, Void, String> {
+
+        private ProgressDialog pDialog;
 
         Context ctx;
 
@@ -524,23 +461,28 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
 
             pDialog = new ProgressDialog(SignIn.this);
             pDialog.setMessage("Signing In ... ");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
             pDialog.show();
         }
 
         @Override
         protected String doInBackground(String... params) {
 
+
             String method = params[0];
 
             if (method.equals("signin")) {
 
-                String si_username= params[1];
-                String si_email = params[2];
-                String si_password = params[3];
-                String si_device_token = params[4];
+                String signin_username= params[1];
+                String signin_email = params[2];
+                String signin_password = params[3];
+                String signin_usertype = params[4];
+                String signin_course = params[5];
+                String signin_device_token = params[6];
 
                 try {
-                    URL url = new URL(BasicFunctions.SIGNIN);
+                    URL url = new URL(EndPoints.SIGNIN);
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     httpURLConnection.setRequestMethod("POST");
                     httpURLConnection.setDoOutput(true);
@@ -548,10 +490,12 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
 
 
-                    String data = URLEncoder.encode("si_username", "UTF-8") + "=" + URLEncoder.encode(si_username, "UTF-8")
-                            + "&" + URLEncoder.encode("si_email", "UTF-8") + "=" + URLEncoder.encode(si_email, "UTF-8")
-                            + "&" + URLEncoder.encode("si_password", "UTF-8") + "=" + URLEncoder.encode(si_password, "UTF-8")
-                            + "&" + URLEncoder.encode("si_device_token", "UTF-8") + "=" + URLEncoder.encode(si_device_token, "UTF-8");
+                    String data = URLEncoder.encode("signin_username", "UTF-8") + "=" + URLEncoder.encode(signin_username, "UTF-8")
+                            + "&" + URLEncoder.encode("signin_email", "UTF-8") + "=" + URLEncoder.encode(signin_email, "UTF-8")
+                            + "&" + URLEncoder.encode("signin_password", "UTF-8") + "=" + URLEncoder.encode(signin_password, "UTF-8")
+                            + "&" + URLEncoder.encode("signin_usertype", "UTF-8") + "=" + URLEncoder.encode(signin_usertype, "UTF-8")
+                            + "&" + URLEncoder.encode("signin_course", "UTF-8") + "=" + URLEncoder.encode(signin_course, "UTF-8")
+                            + "&" + URLEncoder.encode("signin_device_token", "UTF-8") + "=" + URLEncoder.encode(signin_device_token, "UTF-8");
 
                     bufferedWriter.write(data);
                     bufferedWriter.flush();
@@ -560,17 +504,17 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
                     InputStream IS = httpURLConnection.getInputStream();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(IS,"iso-8859-1"));
 
-                    StringBuilder response = new StringBuilder();
+                    String response = "";
                     String line;
 
                     while((line = bufferedReader.readLine())!=null)  {
-                        response.append(line);
+                        response += line;
                     }
                     bufferedReader.close();
 
                     IS.close();
                     httpURLConnection.disconnect();
-                    return response.toString();
+                    return response;
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -597,7 +541,6 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
 
                     Intent intent = new Intent(SignIn.this, HomePage.class);
                     startActivity(intent);
-                    SignIn.this.finish();
 
                     pDialog.dismiss();
 
@@ -628,7 +571,6 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
     }
 
 
-    @SuppressLint("StaticFieldLeak")
     private class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
         @Override
@@ -637,8 +579,6 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
             pDialog = new ProgressDialog(SignIn.this);
             pDialog.setMessage("Downloading the File ... ");
             pDialog.setIndeterminate(false);
-            pDialog.setMax(100);
-            pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             pDialog.setCancelable(true);
             pDialog.show();
 
@@ -648,30 +588,18 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
         protected String doInBackground(String... f_url) {
             int count;
             try {
-
                 URL url = new URL(f_url[0]);
                 URLConnection connection = url.openConnection();
                 connection.connect();
 
-                int fileLength = connection.getContentLength();
-
                 InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
-                @SuppressLint("SdCardPath") File dir = new File("/sdcard/FebBook");
-                dir.mkdir();
-
                 @SuppressLint("SdCardPath")
-                OutputStream output = new FileOutputStream("/sdcard/FebBook/" + "FebTechT&C.pdf");
+                OutputStream output = new FileOutputStream("/sdcard/Download/" + "FebulousT&C.pdf");
 
                 byte data[] = new byte[1024];
 
-                long total = 0;
-
                 while ((count = input.read(data)) != -1) {
-
-                    total += count;
-
-                    publishProgress("" + (int)((total*100) / fileLength));
 
                     output.write(data, 0, count);
                 }
@@ -681,40 +609,19 @@ public class SignIn extends AppCompatActivity implements GoogleApiClient.OnConne
                 output.close();
                 input.close();
 
-            } catch (final Exception e) {
-
-                SignIn.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(SignIn.this,"Error : "+ e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
+            } catch (Exception e) {
+                Toast.makeText(SignIn.this,"Error : "+ e.getMessage(),Toast.LENGTH_LONG).show();
             }
 
             return null;
         }
 
-        protected void onProgressUpdate(String... progress) {
-
-            pDialog.setProgress(Integer.parseInt(progress[0]));
-
-        }
 
         @Override
         protected void onPostExecute(String file_url) {
 
             pDialog.dismiss();
-
-            @SuppressLint("SdCardPath") File file = new File("/sdcard/FebBook/FebTechT&C.pdf");
-
-            String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(".PDF");
-
-            Intent intent = new Intent();
-            intent.setAction(android.content.Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.fromFile(file), mime);
-            startActivityForResult(intent, 10);
-
-            Toast.makeText(SignIn.this, "The File has been downloaded to /sdcard/FebBook/ !", Toast.LENGTH_LONG).show();
+            Toast.makeText(SignIn.this, "The File has been downloaded to /sdcard/Download/ !",Toast.LENGTH_LONG).show();
 
         }
     }
