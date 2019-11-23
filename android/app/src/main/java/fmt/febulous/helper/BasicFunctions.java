@@ -449,8 +449,8 @@ public class BasicFunctions {
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
-            cal.add(Calendar.HOUR_OF_DAY, 5);
-            cal.add(Calendar.MINUTE, 30);
+            //cal.add(Calendar.HOUR_OF_DAY, 5);
+            //cal.add(Calendar.MINUTE, 30);
 
             SimpleDateFormat todayFormat = new SimpleDateFormat("dd", Locale.US);
             String dateToday = todayFormat.format(cal.getTime());

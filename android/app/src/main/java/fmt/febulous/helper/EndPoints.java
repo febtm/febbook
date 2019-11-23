@@ -4,8 +4,8 @@ package fmt.febulous.helper;
 public class EndPoints {
 
 
-    //private static final String BASE_URL = "http://10.0.3.2/android_febulous/";
-    private static final String BASE_URL = "http://www.febulous.esy.es/android_febulous/";
+    private static final String BASE_URL = "http://10.0.3.2/android_febulous/";
+    //private static final String BASE_URL = "http://www.febulous.esy.es/android_febulous/";
 
     public static final String ADD_CHAT = BASE_URL + "addChat.php";
     public static final String BASIC_FUNCTIONS = BASE_URL + "basicFunctions.php";
