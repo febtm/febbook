@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_messenger_item">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="60dp"
+        android:scrollbars="vertical"/>
+
+    <LinearLayout
+        android:id="@+id/Useraction"
+        android:layout_width="match_parent"
+        android:background="@color/colorPrimary"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:layout_margin="5dp"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal|bottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/item_green_border">
+
+            <EditText
+                android:id="@+id/message"
+                android:gravity="start"
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
+                android:textSize="14sp"
+                android:layout_gravity="center"
+                android:hint="@string/type_in_your_message"
+                android:background="@color/colorTertiary"
+                android:textColorHint="@color/colorSecondary"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary" />
+
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/btn_send"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="30dp"
+            android:text="@string/send_message"
+            android:textStyle="bold"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimary"
+            android:background="@color/colorTertiary"/>
+
+    </LinearLayout>
+
+</FrameLayout>

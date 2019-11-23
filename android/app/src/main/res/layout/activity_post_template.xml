@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/pt_layout">
+
+    <FrameLayout
+        android:id="@+id/pt_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/colorPrimary">
+
+                <ImageButton
+                    android:id="@+id/pt_left_menu_btn"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:layout_marginStart="3dp"
+                    android:src="@drawable/app_home"
+                    android:contentDescription="@null"
+                    android:layout_marginEnd="20dp"/>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="70dp"
+                    android:layout_marginRight="70dp"
+                    android:background="@drawable/item_green_border"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp">
+
+
+                    <EditText
+                        android:id="@+id/pt_search_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="5dp"
+                        android:paddingEnd="40dp"
+                        android:hint="@string/search_posts"
+                        android:background="@color/colorPrimary"
+                        android:textColorHint="@color/colorSecondary"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="@color/colorTertiary">
+                    </EditText>
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="end|center"
+                        android:padding="5dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/app_search_post"
+                        android:background="@color/colorPrimary"
+                        />
+
+                </FrameLayout>
+
+
+                <ImageButton
+                    android:id="@+id/pt_right_menu_btn"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:src="@drawable/app_filters"
+                    android:contentDescription="@null"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_gravity="end" />
+
+            </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <FrameLayout
+            android:id="@+id/pt_root_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+        <ListView
+            android:id="@+id/pt_search_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            android:layout_marginLeft="70dp"
+            android:layout_marginRight="70dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginBottom="70dp"
+            android:layout_gravity="center_horizontal"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/pt_post"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/item_green_border"
+        android:layout_gravity="center_horizontal|bottom"
+        android:padding="3dp"
+        >
+
+        <Button
+            android:id="@+id/pt_post_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/post_recycler_post_to_febulous"
+            android:textColor="@color/colorTertiary"
+            android:textStyle="bold"
+            android:background="@color/colorPrimary"/>
+
+    </LinearLayout>
+
+
+
+</FrameLayout>

@@ -21,10 +21,8 @@ $sql3 = "UPDATE chat_rooms SET user2_online = 0 WHERE user2_id = '$userid';";
 else
 $sql3 = "SELECT * FROM likes";
 
-$sql4 = "UPDATE profile SET device_token = '' WHERE userid = '$userid'";
 
-
-if(mysqli_query($con, $sql3) && mysqli_query($con, $sql4))
+if(mysqli_query($con, $sql3))
 echo "Logout Successful !";
 
 else

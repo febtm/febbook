@@ -6,9 +6,9 @@ import java.io.Serializable;
 public class ChatMessage implements Serializable {
 
 
-    private String message_id, message, createdAt;
+    String message_id, message, createdAt;
 
-    private ChatUser chatUser;
+    ChatUser chatUser;
 
     public ChatMessage() {}
 

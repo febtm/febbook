@@ -1,0 +1,16 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Messenger">
+
+    <item
+        android:id="@+id/delete"
+        android:title="@string/menu_delete"
+        android:orderInCategory="200"
+        app:showAsAction="always"
+        android:checkable="true"
+        android:icon="@drawable/messages_delete"
+        />
+
+</menu>

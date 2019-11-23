@@ -7,7 +7,7 @@ $email = $_GET['email'];
 require_once('init.php');
 
 
-$sql = "SELECT userid, username, picture, email, password FROM profile WHERE email = '".addslashes($email)."'";
+$sql = "SELECT userid, username, picture, email, password FROM profile WHERE email = '".$email."'";
  
 $r = mysqli_query($con,$sql);
  

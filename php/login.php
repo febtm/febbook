@@ -4,10 +4,9 @@ require_once('init.php');
 
 $user_email=$_POST["login_email"];
 $user_password=$_POST["login_password"];
-$user_device_token=$_POST["login_device_token"];
 
 
-$sql1 = "SELECT userid FROM profile WHERE email = '".addslashes($user_email)."' AND password = '".addslashes($user_password)."';";
+$sql1 = "SELECT userid FROM profile WHERE email = '$user_email' AND password = '$user_password';";
 
 $result1 = mysqli_query($con, $sql1);
 
@@ -18,31 +17,25 @@ $row = mysqli_fetch_array($result1);
 $user_id = $row['userid'];
 
 
-$sql2 = "UPDATE profile SET device_token = '$user_device_token' WHERE userid = '$user_id';";
+$sql2 = "SELECT * FROM chat_rooms WHERE user1_id = '$user_id'";
 
 $result2 = mysqli_query($con, $sql2);
 
-
-$sql3 = "SELECT * FROM chat_rooms WHERE user1_id = '$user_id'";
+$sql3 = "SELECT * FROM chat_rooms WHERE user2_id = '$user_id'";
 
 $result3 = mysqli_query($con, $sql3);
 
 
-$sql4 = "SELECT * FROM chat_rooms WHERE user2_id = '$user_id'";
+if(mysqli_num_rows($result2)>0)
+$sql4 = "UPDATE chat_rooms SET user1_online = 1 WHERE user1_id = '$user_id';";
 
-$result4 = mysqli_query($con, $sql4);
-
-
-if(mysqli_num_rows($result3)>0)
-$sql5 = "UPDATE chat_rooms SET user1_online = 1 WHERE user1_id = '$user_id';";
-
-else if(mysqli_num_rows($result4)>0)
-$sql5 = "UPDATE chat_rooms SET user2_online = 1 WHERE user2_id = '$user_id';";
+else if(mysqli_num_rows($result3)>0)
+$sql4 = "UPDATE chat_rooms SET user2_online = 1 WHERE user2_id = '$user_id';";
 
 else
-$sql5 = "SELECT * FROM likes";
+$sql4 = "SELECT * FROM likes";
 
-if(mysqli_query($con, $sql5))
+if(mysqli_query($con, $sql4))
 echo "Login Successful !";
 
 else

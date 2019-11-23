@@ -1,93 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    android:layout_marginTop="5dp"
-    android:layout_marginBottom="5dp"
-    android:background="@color/colorPrimaryTransparent77">
+    android:layout_margin="10dp"
+    android:background="@drawable/item_green_border"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:background="@color/colorTertiary"
+        android:visibility="visible"
         android:orientation="vertical"
-        android:layout_marginRight="40dp"
-        android:layout_marginEnd="40dp"
-        tools:ignore="RtlHardcoded">
+        android:gravity="end">
 
-        <FrameLayout
+        <ToggleButton
+            android:id="@+id/deletebutton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center|end"
+            android:background="@drawable/app_delete_off"
+            android:visibility="gone"/>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp">
+            android:orientation="horizontal"
+            android:background="@color/colorTertiary"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
 
-                <ImageView
-                    android:id="@+id/mes_i_useronline"
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_gravity="start|center"
-                    android:background="@drawable/mes_online"
-                    android:contentDescription="@null"
-                    android:visibility="gone"
-                    android:layout_marginStart="5dp" />
+            <ImageView
+                android:id="@+id/useronline"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:background="@drawable/app_green_circle"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null"
+                android:visibility="gone"
+                android:layout_gravity="start|center"
+                />
 
-                <com.pkmmte.view.CircularImageView
-                    android:id="@+id/mes_i_userimage"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginStart="20dp" />
+            <com.pkmmte.view.CircularImageView
+                android:id="@+id/userimage"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="10dp"
+                />
 
-                <TextView
-                    android:id="@+id/mes_i_username"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:paddingEnd="45dp"
-                    android:text="@string/username"
-                    android:textColor="@color/colorSecondary"
-                    android:textSize="16sp"
-                    android:layout_marginLeft="45dp"
-                    android:textStyle="bold"
-                    tools:ignore="RtlSymmetry"
-                    android:layout_marginStart="45dp"
-                    android:paddingRight="45dp" />
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
 
-                <ImageView
-                    android:id="@+id/mes_i_userread"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_gravity="center|end"
-                    android:background="@drawable/app_ok"
-                    android:contentDescription="@null"
-                    android:visibility="visible" />
+                    <TextView
+                        android:id="@+id/username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimary"
+                        android:paddingEnd="40dp"
+                        android:layout_gravity="center"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:text="@string/username"/>
 
-            </FrameLayout>
+                    <ImageView
+                        android:id="@+id/userread"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:background="@drawable/app_tick"
+                        android:layout_marginEnd="5dp"
+                        android:contentDescription="@null"
+                        android:visibility="gone"
+                        android:layout_gravity="center|end"
+                        />
+
+                </FrameLayout>
+
+        </LinearLayout>
+
 
     <TextView
-        android:id="@+id/mes_i_timestamp"
+        android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:padding="5dp"
+        android:gravity="end"
+        android:background="@color/colorTertiary"
         android:textColor="@color/colorQuaternary"
         android:text="@string/timestamp"
         android:textSize="12sp"/>
 
+    </LinearLayout>
+
 </LinearLayout>
-
-    <ImageButton
-        android:id="@+id/mes_i_deletebutton"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginRight="10dp"
-        android:layout_gravity="center|end"
-        android:background="@drawable/app_delete"
-        android:layout_marginEnd="10dp"
-        tools:ignore="RtlHardcoded"
-        android:contentDescription="@null" />
-
-</FrameLayout>

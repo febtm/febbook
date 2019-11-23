@@ -1,60 +1,46 @@
 package fmt.febulous;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.ShareOpenGraphAction;
 import com.facebook.share.model.ShareOpenGraphContent;
 import com.facebook.share.model.ShareOpenGraphObject;
 import com.facebook.share.widget.ShareDialog;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -75,42 +61,41 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import fmt.febulous.helper.BasicFunctions;
+import fmt.febulous.helper.EndPoints;
+import io.fabric.sdk.android.Fabric;
 
 
 public class PostItem extends AppCompatActivity {
 
-    Button B_POST, B_IMAGE, B_FILE;
 
-    ImageView IV_IMAGE;
+    Button button_publish;
 
-    private int imagePresent = 0;
+    Button Image_button, File_button;
+    ImageView Post_image;
 
-    private boolean fileExists;
+    private int image_present = 0;
 
-    String type, title, description, image, facebookShare ="No", twitterShare = "No", intentType;
+    String type1, title1, desc1, image1, facebook_share ="No", twitter_share = "No", TYPE;
 
-    EditText ET_TITLE, ET_DESCRIPTION;
+    EditText title,desc;
 
-    TextView TV_TYPE;
+    TextView type;
 
-    private String userId;
+    private String uid1;
+
+    String actionbar_title;
 
     private CallbackManager fb_callbackManager;
 
-    private Switch SHARE_FB, SHARE_TWITTER;
+    private Switch share_on_fb, share_on_twitter;
 
     private BasicFunctions basicFunctions;
 
     private static final int PICK_FILE_REQUEST = 3;
-    private String originalFilePath, serverFilePath;
-    private String fileName;
-    private int fileVersion;
-
+    private String selectedFilePath;
     private ProgressDialog pDialog;
-
     PowerManager.WakeLock wakeLock;
 
-    ImageButton BACK_BUTTON, PI_TITLE_CANCEL, PI_DESC_CANCEL;
 
 
     @Override
@@ -118,82 +103,51 @@ public class PostItem extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_item);
 
+        actionbar_title="\tPOST TO FEBULOUS";
+        setTitle(actionbar_title);
+
         basicFunctions = new BasicFunctions(this);
 
-        BACK_BUTTON = findViewById(R.id.pi_back);
+        uid1 =  basicFunctions.getUser_id();
 
-        BACK_BUTTON.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        type = (TextView) findViewById(R.id.post_type);
+        title =(EditText)findViewById(R.id.post_title);
+        desc =(EditText)findViewById(R.id.post_description);
 
-                finish();
+        Image_button = (Button) findViewById(R.id.post_image_button);
+        File_button = (Button) findViewById(R.id.post_file_button);
+        Post_image = (ImageView) findViewById(R.id.post_image);
 
-            }
-        });
+        share_on_fb = (Switch) findViewById(R.id.share_facebook);
+        share_on_twitter = (Switch) findViewById(R.id.share_twitter);
 
-        AdView mAdView = findViewById(R.id.pi_adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-
-        userId =  basicFunctions.getUser_id();
-
-        TV_TYPE = findViewById(R.id.pi_post_type);
-        ET_TITLE = findViewById(R.id.pi_title);
-        ET_DESCRIPTION = findViewById(R.id.pi_description);
-
-        PI_TITLE_CANCEL = findViewById(R.id.pi_title_cancel);
-
-        PI_TITLE_CANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ET_TITLE.setText("");
-
-            }
-        });
-
-        PI_DESC_CANCEL = findViewById(R.id.pi_description_cancel);
-
-        PI_DESC_CANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ET_DESCRIPTION.setText("");
-
-            }
-        });
-
-        B_IMAGE = findViewById(R.id.pi_image_button);
-        B_FILE = findViewById(R.id.pi_file_button);
-        B_POST = findViewById(R.id.pi_post);
-        IV_IMAGE = findViewById(R.id.post_image);
-
-        SHARE_FB = findViewById(R.id.pi_share_facebook);
-        SHARE_TWITTER = findViewById(R.id.pi_share_twitter);
-
+        FacebookSdk.sdkInitialize(getApplicationContext());
         fb_callbackManager = CallbackManager.Factory.create();
 
-        Intent intent = getIntent();
-        intentType = intent.getStringExtra("type");
+        TwitterAuthConfig authConfig =  new TwitterAuthConfig(basicFunctions.TWITTER_KEY, basicFunctions.TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
 
-        switch (intentType){
+        Intent intent = getIntent();
+        TYPE = intent.getStringExtra("type");
+
+        switch (TYPE){
 
             case "GK":
 
-                TV_TYPE.setText(getResources().getString(R.string.hp_db_gk));
+                type.setText(getResources().getString(R.string.general_digest));
                 break;
 
             case "QNA":
 
-                TV_TYPE.setText(getResources().getString(R.string.hp_db_qna));
+                type.setText(getResources().getString(R.string.qna_section));
                 break;
 
             case "Materials":
 
-                TV_TYPE.setText(getResources().getString(R.string.hp_db_materials));
-                ET_DESCRIPTION.setFocusable(false);
+                type.setText(getResources().getString(R.string.study_materials));
+                desc.setFocusable(false);
 
-                ET_DESCRIPTION.setOnClickListener(new View.OnClickListener() {
+                desc.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
@@ -202,155 +156,159 @@ public class PostItem extends AppCompatActivity {
                     }
                 });
 
-                B_FILE.setVisibility(View.VISIBLE);
-                B_IMAGE.setVisibility(View.GONE);
+                File_button.setVisibility(View.VISIBLE);
+                Image_button.setVisibility(View.GONE);
 
                 break;
 
             case "Teach":
 
-                TV_TYPE.setText(getResources().getString(R.string.hp_db_tat));
+                type.setText(getResources().getString(R.string.teach_a_topic));
                 break;
 
             case "Ideas":
 
-                TV_TYPE.setText(getResources().getString(R.string.hp_db_ideas));
+                type.setText(getResources().getString(R.string.ideas_galore));
                 break;
 
             case "Events":
 
-                TV_TYPE.setText(getResources().getString(R.string.hp_db_events));
+                type.setText(getResources().getString(R.string.events_and_invites));
                 break;
 
             default:
 
-                TV_TYPE.setText(getResources().getString(R.string.hp_db_gk));
+                type.setText(getResources().getString(R.string.general_digest));
                 break;
 
         }
 
-        B_IMAGE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                int MyVersion = Build.VERSION.SDK_INT;
-
-                if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
-
-                    if (basicFunctions.HasCameraAndStoragePermission()) {
-
-                        selectImage();
-
-                    }
-
-                    else {
-
-                        requestCameraAndStoragePermission();
-
-                    }
-                }
-
-                else
-                    selectImage();
-            }
-        });
-
-
-        B_FILE.setOnClickListener(new View.OnClickListener() {
+        File_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                int MyVersion = Build.VERSION.SDK_INT;
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
 
-                if (MyVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                            case DialogInterface.BUTTON_POSITIVE:
 
-                    if (basicFunctions.HasStoragePermission()) {
+                                showFileChooser();
 
-                        showFileChooser();
+                                break;
 
+                            case DialogInterface.BUTTON_NEGATIVE:
+
+                                Toast.makeText(PostItem.this, "Kindly grant Febulous the permission to use the External Storage !", Toast.LENGTH_LONG).show();
+
+                        }
                     }
+                };
 
-                    else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(PostItem.this);
+                builder.setMessage("Have you granted Febulous the permission to use the External Storage ?")
+                        .setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
 
-                        requestStoragePermission();
-
-                    }
-                }
-
-                else
-                    showFileChooser();
             }
         });
 
 
-        B_POST.setOnClickListener(new View.OnClickListener(){
+        Image_button.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
 
-                dbPost();
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+
+                            case DialogInterface.BUTTON_POSITIVE:
+
+                                selectImage();
+
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+
+                                Toast.makeText(PostItem.this, "Kindly grant Febulous the permission to use the Camera and the External Storage !", Toast.LENGTH_LONG).show();
+
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(PostItem.this);
+                builder.setMessage("Have you granted Febulous the permission to use the Camera and the External Storage ?")
+                        .setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
 
             }
         });
 
-        SHARE_FB.setChecked(false);
+        onClickButtonListener();
 
-        SHARE_FB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        share_on_fb.setChecked(false);
+
+        share_on_fb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if (isChecked) {
 
-                    facebookShare = "Yes";
+                    facebook_share = "Yes";
 
-                    if(ET_TITLE.getText().toString().equals("")) {
+                    if(title.getText().toString().equals("")) {
 
-                        ET_TITLE.setError("Type in a Title for your Post !");
-                        SHARE_FB.setChecked(false);
-                        facebookShare = "No";
+                        title.setError("Type in a Title for your Post !");
+                        share_on_fb.setChecked(false);
+                        facebook_share = "No";
 
                     }
 
-                    else if(ET_DESCRIPTION.getText().toString().equals("")) {
+                    else if(desc.getText().toString().equals("")) {
 
-                        ET_DESCRIPTION.setError("Type in a Description for your Post !");
-                        SHARE_FB.setChecked(false);
-                        facebookShare = "No";
+                        desc.setError("Type in a Description for your Post !");
+                        share_on_fb.setChecked(false);
+                        facebook_share = "No";
 
                     }
 
                     else
-                        shareOnFacebook();
+                        shareonFacebook();
 
                 }
 
                 else
-                    facebookShare = "No";
+                    facebook_share = "No";
 
             }
         });
 
 
-        SHARE_TWITTER.setChecked(false);
+        share_on_twitter.setChecked(false);
 
-        SHARE_TWITTER.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        share_on_twitter.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if (isChecked) {
 
-                    twitterShare = "Yes";
+                    twitter_share = "Yes";
 
-                    if(ET_TITLE.getText().toString().equals("")) {
+                    if(title.getText().toString().equals("")) {
 
-                        ET_TITLE.setError("Type in a Title for your Post !");
-                        SHARE_TWITTER.setChecked(false);
-                        twitterShare = "No";
+                        title.setError("Type in a Title for your Post !");
+                        share_on_twitter.setChecked(false);
+                        twitter_share = "No";
 
                     }
 
-                    else if(ET_DESCRIPTION.getText().toString().equals("")) {
+                    else if(desc.getText().toString().equals("")) {
 
-                        ET_DESCRIPTION.setError("Type in a Description for your Post !");
-                        SHARE_TWITTER.setChecked(false);
-                        twitterShare = "Yes";
+                        desc.setError("Type in a Description for your Post !");
+                        share_on_twitter.setChecked(false);
+                        twitter_share = "Yes";
 
                     }
 
@@ -360,7 +318,7 @@ public class PostItem extends AppCompatActivity {
                 }
 
                 else
-                    twitterShare = "No";
+                    twitter_share = "No";
 
             }
         });
@@ -368,73 +326,17 @@ public class PostItem extends AppCompatActivity {
     }
 
 
-    private void requestCameraAndStoragePermission() {
-
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
-
-    }
-
-
-    private void requestStoragePermission() {
-
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE}, 102);
-
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        switch (requestCode) {
-
-            case 101:
-
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    selectImage();
-
-                } else {
-
-                    Toast.makeText(PostItem.this, "Kindly grant Camera and Storage permission to continue !", Toast.LENGTH_LONG).show();
-
-                }
-
-             break;
-
-            case 102:
-
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    showFileChooser();
-
-                } else {
-
-                    Toast.makeText(PostItem.this, "Kindly grant Storage permission to continue !", Toast.LENGTH_LONG).show();
-
-                }
-
-                break;
-
-
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-
     private void showFileChooser() {
 
         Intent intent = new Intent();
-        intent.setType("*/*");
+        intent.setType("file/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Add a File !"), PICK_FILE_REQUEST);
     }
 
 
-    private void uploadFile(final String originalFilePath, final String serverFilePath) {
+
+    private int uploadFile(final String selectedFilePath) {
 
         int serverResponseCode = 0;
 
@@ -444,12 +346,14 @@ public class PostItem extends AppCompatActivity {
         String twoHyphens = "--";
         String boundary = "*****";
 
+
         int bytesRead, bytesAvailable, bufferSize;
         byte[] buffer;
         int maxBufferSize = 1024 * 1024;
-        File selectedFile = new File(originalFilePath);
+        File selectedFile = new File(selectedFilePath);
 
-        String[] parts = serverFilePath.split("/");
+
+        String[] parts = selectedFilePath.split("/");
         final String fileName = parts[parts.length - 1];
 
         if (!selectedFile.isFile()) {
@@ -459,16 +363,17 @@ public class PostItem extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(PostItem.this, "File Doesn't Exist : " + originalFilePath, Toast.LENGTH_LONG).show();
+                    Toast.makeText(PostItem.this, "File Doesn't Exist : " + selectedFilePath, Toast.LENGTH_LONG).show();
                 }
             });
+            return 0;
 
         } else {
 
             try {
 
                 FileInputStream fileInputStream = new FileInputStream(selectedFile);
-                URL url = new URL(BasicFunctions.STUDY_MATERIALS);
+                URL url = new URL(EndPoints.STUDY_MATERIALS);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
@@ -478,13 +383,13 @@ public class PostItem extends AppCompatActivity {
                 connection.setRequestProperty("ENCTYPE", "multipart/form-data");
                 connection.setRequestProperty(
                         "Content-Type", "multipart/form-data;boundary=" + boundary);
-                connection.setRequestProperty("uploaded_file", serverFilePath);
+                connection.setRequestProperty("uploaded_file", selectedFilePath);
 
                 dataOutputStream = new DataOutputStream(connection.getOutputStream());
 
                 dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
                 dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""
-                        + serverFilePath + "\"" + lineEnd);
+                        + selectedFilePath + "\"" + lineEnd);
 
                 dataOutputStream.writeBytes(lineEnd);
 
@@ -516,47 +421,30 @@ public class PostItem extends AppCompatActivity {
                     Toast.makeText(PostItem.this, "Memory Insufficient !", Toast.LENGTH_LONG).show();
                 }
 
+
                 if (serverResponseCode == 200) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            desc1 = fileName.replaceAll("[^A-Za-z0-9\\.]", "").toLowerCase().replaceAll(" ","");
 
-                            description = fileName.replaceAll("[^A-Za-z0-9\\.]", "").toLowerCase().replaceAll(" ","");
+                            if(basicFunctions.isConnectingToInternet()) {
 
-                            if(basicFunctions.isConnectingToInternet())
-                                postItem();
+                                PostAnItemBackgroundTask backgroundTask = new PostAnItemBackgroundTask(PostItem.this);
+                                backgroundTask.execute("post", type1, title1, desc1, "", uid1, facebook_share, twitter_share);
 
-                            else {
+                            }
+
+                            else{
 
                                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         switch (which){
-
                                             case DialogInterface.BUTTON_POSITIVE:
 
-                                                if(basicFunctions.isConnectingToInternet())
-                                                    postItem();
-
-                                                else {
-
-                                                    Toast.makeText(PostItem.this,
-                                                            "No Internet Connection. Try again later !",
-                                                            Toast.LENGTH_LONG).show();
-
-                                                    dialog.dismiss();
-
-                                                }
-
-                                                break;
-
-                                            case DialogInterface.BUTTON_NEGATIVE:
-
-                                                Toast.makeText(PostItem.this,
-                                                        "No Internet Connection. Try again later !",
-                                                        Toast.LENGTH_LONG).show();
-
-                                                dialog.dismiss();
+                                                Intent intent = new Intent(PostItem.this, HomePage.class);
+                                                startActivity(intent);
 
                                                 break;
 
@@ -565,9 +453,8 @@ public class PostItem extends AppCompatActivity {
                                 };
 
                                 AlertDialog.Builder builder = new AlertDialog.Builder(PostItem.this);
-                                builder.setMessage("No Internet Connection. Try again ?")
-                                        .setPositiveButton("Yes", dialogClickListener)
-                                        .setNegativeButton("No", dialogClickListener).show();
+                                builder.setMessage("Network Failure : Please check your Internet Connection !")
+                                        .setPositiveButton("Try Again ... ", dialogClickListener).show();
 
                             }
 
@@ -613,33 +500,27 @@ public class PostItem extends AppCompatActivity {
             }
 
             pDialog.dismiss();
+            return serverResponseCode;
         }
 
     }
 
 
-    private void postItem() {
 
-        PostAnItemBackgroundTask backgroundTask = new PostAnItemBackgroundTask(PostItem.this);
-        backgroundTask.execute("post", type, title, description, "", userId, facebookShare, twitterShare);
+    private void dbpost() {
 
-    }
+        title1 = title.getText().toString();
+        type1 = TYPE;
 
-    private void dbPost() {
+        if (TextUtils.isEmpty(title1)) {
 
-        title = ET_TITLE.getText().toString();
-        type = intentType;
-
-        if (TextUtils.isEmpty(title)) {
-
-            ET_TITLE.setError("Type in a Title for your Post !");
+            title.setError("Type in a Title for your Post !");
 
         } else {
 
-            if (intentType.equals("Materials")) {
+            if (TYPE.equals("Materials")) {
 
-                if (originalFilePath != null) {
-
+                if (selectedFilePath != null) {
                     pDialog = ProgressDialog.show(PostItem.this, "", "Uploading File ... ", true);
 
                     new Thread(new Runnable() {
@@ -647,8 +528,7 @@ public class PostItem extends AppCompatActivity {
                         public void run() {
 
                             try {
-
-                                uploadFile(originalFilePath, serverFilePath);
+                                uploadFile(selectedFilePath);
 
                             } catch (OutOfMemoryError e) {
 
@@ -670,11 +550,11 @@ public class PostItem extends AppCompatActivity {
 
             } else {
 
-                description = ET_DESCRIPTION.getText().toString();
+                desc1 = desc.getText().toString();
 
-                if (TextUtils.isEmpty(description)) {
+                if (TextUtils.isEmpty(desc1)) {
 
-                    ET_DESCRIPTION.setError("Type in a Description for your Post !");
+                    desc.setError("Type in a Description for your Post !");
 
                 } else {
 
@@ -683,11 +563,11 @@ public class PostItem extends AppCompatActivity {
 
                         PostAnItemBackgroundTask backgroundTask = new PostAnItemBackgroundTask(this);
 
-                        if (imagePresent == 0)
-                            backgroundTask.execute("post", type, title, description, "", userId, facebookShare, twitterShare);
+                        if (image_present == 0)
+                            backgroundTask.execute("post", type1, title1, desc1, "", uid1, facebook_share, twitter_share);
 
                         else
-                            backgroundTask.execute("post", type, title, description, image, userId, facebookShare, twitterShare);
+                            backgroundTask.execute("post", type1, title1, desc1, image1, uid1, facebook_share, twitter_share);
 
                     }
 
@@ -713,10 +593,31 @@ public class PostItem extends AppCompatActivity {
                                 .setPositiveButton("Try Again ... ", dialogClickListener).show();
 
                     }
+
                 }
             }
         }
     }
+
+
+
+    private void onClickButtonListener() {
+
+        button_publish = (Button) findViewById(R.id.post_publish);
+        button_publish.setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+
+                        dbpost();
+
+                    }
+                }
+        );
+
+    }
+
 
 
     private void selectImage() {
@@ -751,6 +652,7 @@ public class PostItem extends AppCompatActivity {
     }
 
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -779,11 +681,11 @@ public class PostItem extends AppCompatActivity {
 
                     ConvertToString(bitmap);
 
-                    IV_IMAGE.setVisibility(View.VISIBLE);
-                    B_IMAGE.setText(getResources().getString(R.string.change_the_picture));
-                    IV_IMAGE.setBackground(null);
+                    Post_image.setVisibility(View.VISIBLE);
+                    Image_button.setText(getResources().getString(R.string.change_the_picture));
+                    Post_image.setBackground(null);
 
-                    IV_IMAGE.setImageBitmap(bitmap);
+                    Post_image.setImageBitmap(bitmap);
 
                     String path = Environment
                             .getExternalStorageDirectory()
@@ -816,9 +718,7 @@ public class PostItem extends AppCompatActivity {
 
                 Uri selectedImage = data.getData();
                 String[] filePath = {MediaStore.Images.Media.DATA};
-                assert selectedImage != null;
                 Cursor c = getContentResolver().query(selectedImage, filePath, null, null, null);
-                assert c != null;
                 c.moveToFirst();
                 int columnIndex = c.getColumnIndex(filePath[0]);
                 String picturePath = c.getString(columnIndex);
@@ -827,11 +727,11 @@ public class PostItem extends AppCompatActivity {
 
                 ConvertToString(thumbnail);
 
-                IV_IMAGE.setVisibility(View.VISIBLE);
-                B_IMAGE.setText(getResources().getString(R.string.change_the_picture));
-                IV_IMAGE.setBackground(null);
+                Post_image.setVisibility(View.VISIBLE);
+                Image_button.setText(getResources().getString(R.string.change_the_picture));
+                Post_image.setBackground(null);
 
-                IV_IMAGE.setImageBitmap(thumbnail);
+                Post_image.setImageBitmap(thumbnail);
 
             }
 
@@ -843,111 +743,22 @@ public class PostItem extends AppCompatActivity {
 
                 int PROXIMITY_WAKE_LOCK = 32;
                 PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-                assert powerManager != null;
                 wakeLock = powerManager.newWakeLock(PROXIMITY_WAKE_LOCK, "beam");
-                wakeLock.acquire(10*60*1000L /*10 minutes*/);
+                wakeLock.acquire();
 
                 Uri selectedFileUri = data.getData();
-                originalFilePath = BasicFunctions.getPath(this, selectedFileUri);
+                selectedFilePath = BasicFunctions.getPath(this, selectedFileUri);
 
-                if (originalFilePath != null && !originalFilePath.equals("")) {
-
-                    pDialog = ProgressDialog.show(PostItem.this, "", "Fetching File ... ", true);
-
-                    fileVersion = 1;
-                    String[] parts = originalFilePath.split("/");
-                    fileName = parts[parts.length - 1];
-                    fileName = fileName.toLowerCase();
-
-                    String[] fileTokens = fileName.split("\\.(?=[^\\.]+$)");
-                    String fileBase = fileTokens[0];
-                    String fileExtension = fileTokens[1];
-
-                    doesServerHaveFile(parts, fileBase, fileExtension);
-
+                if (selectedFilePath != null && !selectedFilePath.equals("")) {
+                    desc.setText(selectedFilePath);
                 } else {
                     Toast.makeText(this, "Cannot upload file to server !", Toast.LENGTH_LONG).show();
                 }
             }
+
         }
 
         fb_callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
-
-    public void doesServerHaveFile(final String[] parts, final String fileBase, final String fileExtension) {
-
-        String url = BasicFunctions.CHECK_FILE_EXISTS + fileName;
-
-        url = url.replaceAll(" ", "");
-
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                try {
-
-                    JSONObject jsonObject = new JSONObject(response);
-                    JSONArray result = jsonObject.getJSONArray(basicFunctions.JSON_ARRAY);
-                    JSONObject fileData = result.getJSONObject(0);
-
-                    fileExists = fileData.getString("fileExists").equals("Yes");
-
-                    if(fileExists) {
-
-                        fileName = fileBase + String.valueOf(fileVersion) + "." + fileExtension;
-
-                        fileVersion++;
-
-                        doesServerHaveFile(parts, fileBase, fileExtension);
-
-                    }
-
-                    else {
-
-                        parts[parts.length - 1] = fileName;
-
-                        serverFilePath = "";
-
-                        for(int i = 0; i < parts.length; i++){
-
-                            if(i < (parts.length-1))
-                                serverFilePath += (parts[i] + "/");
-
-                            else
-                                serverFilePath += parts[i];
-
-                        }
-
-                        ET_DESCRIPTION.setText(fileName);
-
-                        pDialog.dismiss();
-
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(PostItem.this, error.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        stringRequest.setRetryPolicy(
-                new DefaultRetryPolicy(
-                        0,
-                        -1,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        RequestQueue requestQueue = Volley.newRequestQueue(PostItem.this);
-        requestQueue.add(stringRequest);
-
     }
 
 
@@ -958,8 +769,8 @@ public class PostItem extends AppCompatActivity {
             bitmapm.compress(Bitmap.CompressFormat.JPEG, 25, baos);
 
             byte[] byteArrayImage = baos.toByteArray();
-            image = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
-            imagePresent = 1;
+            image1 = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+            image_present = 1;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -967,104 +778,125 @@ public class PostItem extends AppCompatActivity {
     }
 
 
-    private void shareOnFacebook() {
+    private void shareonFacebook() {
 
-        String app_id = "com.facebook.katana";
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 
-        if(basicFunctions.isAppInstalled(app_id)) {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
 
-            ShareDialog shareDialog = new ShareDialog(PostItem.this);
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
 
-            if (ShareDialog.canShow(ShareLinkContent.class)) {
+                        ShareDialog shareDialog = new ShareDialog(PostItem.this);
 
-                shareDialog.registerCallback(fb_callbackManager, new FacebookCallback<Sharer.Result>() {
-                    @Override
-                    public void onSuccess(Sharer.Result result) {
-                        Toast.makeText(PostItem.this, "Facebook Share Successful !", Toast.LENGTH_LONG).show();
-                    }
+                        if (ShareDialog.canShow(ShareLinkContent.class)) {
 
-                    @Override
-                    public void onCancel() {
-                        Toast.makeText(PostItem.this, "Facebook Share Cancelled !", Toast.LENGTH_LONG).show();
-                        SHARE_FB.setChecked(false);
-                    }
+                            shareDialog.registerCallback(fb_callbackManager, new FacebookCallback<Sharer.Result>() {
+                                @Override
+                                public void onSuccess(Sharer.Result result) {
+                                    Toast.makeText(PostItem.this, "Facebook Share Successful !", Toast.LENGTH_LONG).show();
+                                }
 
-                    @Override
-                    public void onError(FacebookException exception) {
-                        Toast.makeText(PostItem.this, exception.getMessage(), Toast.LENGTH_LONG).show();
-                        exception.printStackTrace();
-                    }
-                });
+                                @Override
+                                public void onCancel() {
+                                    Toast.makeText(PostItem.this, "Facebook Share Cancelled !", Toast.LENGTH_LONG).show();
+                                }
 
-                ShareOpenGraphObject object = new ShareOpenGraphObject.Builder()
-                        .putString("og:type", "news.article")
-                        .putString("og:title", ET_TITLE.getText().toString())
-                        .putString("og:description", ET_DESCRIPTION.getText().toString()).build();
+                                @Override
+                                public void onError(FacebookException exception) {
+                                    Toast.makeText(PostItem.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+                                    exception.printStackTrace();
+                                }
+                            });
 
-                ShareOpenGraphAction action = new ShareOpenGraphAction.Builder()
-                        .setActionType("news.publishes").putObject("article", object)
-                        .build();
+                            ShareOpenGraphObject object = new ShareOpenGraphObject.Builder()
+                                    .putString("og:type", "news.article")
+                                    .putString("og:title", title.getText().toString())
+                                    .putString("og:description", desc.getText().toString()).build();
 
-                ShareOpenGraphContent content = new ShareOpenGraphContent.Builder()
-                        .setPreviewPropertyName("article")
-                        .setAction(action)
-                        .build();
+                            ShareOpenGraphAction action = new ShareOpenGraphAction.Builder()
+                                    .setActionType("news.publishes").putObject("article", object)
+                                    .build();
 
-                shareDialog.show(content);
+                            ShareOpenGraphContent content = new ShareOpenGraphContent.Builder()
+                                    .setPreviewPropertyName("article")
+                                    .setAction(action)
+                                    .build();
 
-            } else {
+                            shareDialog.show(content);
 
-                try {
+                        }
 
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + app_id)));
+                        break;
 
-                } catch (android.content.ActivityNotFoundException anfe) {
+                    case DialogInterface.BUTTON_NEGATIVE:
 
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + app_id)));
-
+                        Toast.makeText(getApplicationContext(),"Kindly install the Facebook App to enable Facebook Post Sharing !",Toast.LENGTH_LONG).show();
+                        share_on_fb.setChecked(false);
+                        break;
                 }
-
-                SHARE_FB.setChecked(false);
-
-                Toast.makeText(getApplicationContext(), "Kindly install the Facebook App to enable Facebook Post Sharing !", Toast.LENGTH_LONG).show();
-
             }
-        }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Is the Facebook App installed on your device ?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+
     }
 
 
     private void shareOnTwitter(){
 
-        String app_id = "com.twitter.android";
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
 
-        if(basicFunctions.isAppInstalled(app_id)) {
+                        TweetComposer.Builder builder = new TweetComposer.Builder(PostItem.this)
+                                .text(basicFunctions.POST_TW + " - " + title.getText().toString() + " : " + desc.getText().toString());
+                        builder.show();
 
-            TweetComposer.Builder builder = new TweetComposer.Builder(PostItem.this)
-                    .text("FebBook - " + ET_TITLE.getText().toString() + " : " + ET_DESCRIPTION.getText().toString());
-            builder.show();
+                        break;
 
-        } else {
+                    case DialogInterface.BUTTON_NEGATIVE:
 
-            try {
-
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + app_id)));
-
-            } catch (android.content.ActivityNotFoundException anfe) {
-
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + app_id)));
-
+                        Toast.makeText(getApplicationContext(),"Kindly install the Twitter App to enable Twitter Post Sharing!",Toast.LENGTH_LONG).show();
+                        share_on_twitter.setChecked(false);
+                        break;
+                }
             }
+        };
 
-            Toast.makeText(getApplicationContext(),"Kindly install the Twitter App to enable Twitter Post Sharing !",Toast.LENGTH_LONG).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Is the Twitter App installed on your device ?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
 
-            SHARE_TWITTER.setChecked(false);
+    }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_normal, menu);
+        return true;
+    }
+
+
+    @Override
+     public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
 
     }
 
 
-    @SuppressLint("StaticFieldLeak")
     private class PostAnItemBackgroundTask extends AsyncTask<String, Void, String> {
 
         private ProgressDialog pi_loading;
@@ -1080,7 +912,7 @@ public class PostItem extends AppCompatActivity {
         public void onPreExecute() {
             super.onPreExecute();
             pi_loading = new ProgressDialog(PostItem.this);
-            pi_loading.setMessage("Posting to FebBook ... ");
+            pi_loading.setMessage("Posting to Febulous ... ");
             pi_loading.setIndeterminate(false);
             pi_loading.setCancelable(true);
             pi_loading.show();
@@ -1088,6 +920,7 @@ public class PostItem extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
+
 
             String method = params[0];
 
@@ -1102,12 +935,13 @@ public class PostItem extends AppCompatActivity {
                 String twitter_share = params[7];
 
                 try {
-                    URL url = new URL(BasicFunctions.POST);
+                    URL url = new URL(EndPoints.POST);
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     httpURLConnection.setRequestMethod("POST");
                     httpURLConnection.setDoOutput(true);
                     OutputStream OS = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
+
 
                     data = URLEncoder.encode("type", "UTF-8") + "=" + URLEncoder.encode(type, "UTF-8")
                             + "&" + URLEncoder.encode("title", "UTF-8") + "=" + URLEncoder.encode(title, "UTF-8")
@@ -1125,18 +959,18 @@ public class PostItem extends AppCompatActivity {
                     InputStream IS = httpURLConnection.getInputStream();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(IS, "iso-8859-1"));
 
-                    StringBuilder response = new StringBuilder();
+                    String response = "";
                     String line;
 
                     while ((line = bufferedReader.readLine()) != null) {
-                        response.append(line);
+                        response += line;
                     }
 
                     bufferedReader.close();
                     httpURLConnection.disconnect();
                     IS.close();
 
-                    return response.toString();
+                    return response;
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -1154,33 +988,21 @@ public class PostItem extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
 
-            switch (result) {
+            if (result.equals("Your Post has been published !")) {
+                Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
 
-                case "Your Post has been published !":
+                pi_loading.dismiss();
 
-                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(PostItem.this, HomePage.class);
+                startActivity(intent);
 
-                    pi_loading.dismiss();
+            } else if (result.equals("Posting Failed !")) {
 
-                    Intent intent = new Intent(PostItem.this, HomePage.class);
-                    startActivity(intent);
+                Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
+                pi_loading.dismiss();
 
-                    break;
-
-                case "Posting Failed !":
-
-                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
-                    pi_loading.dismiss();
-
-                    break;
-
-                default:
-
-                    Toast.makeText(ctx, result, Toast.LENGTH_LONG).show();
-                    pi_loading.dismiss();
-
-                    break;
             }
         }
     }
+
 }

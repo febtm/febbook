@@ -1,0 +1,5 @@
+<resources>
+
+    <dimen name="user_image_dimension">100dp</dimen>
+
+</resources>

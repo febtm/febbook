@@ -25,23 +25,6 @@ $sql_report = "SELECT * FROM report WHERE post_id = '$id' AND post_title_comment
 $res_report = mysqli_query($con, $sql_report);
 
 
-require_once('fcmNotPush.php');
-
-require_once('fcmNotFirebase.php');
-
-
-$push = null; 
-
-$sql_12 = "SELECT username FROM profile WHERE userid = $user_id";
-
-$res_12 = mysqli_query($con, $sql_12);
-
-$row_12 = mysqli_fetch_array($res_12);
-
-
-$devicetoken = array();
-	
-
 if($method === $methodname1)
 {
 
@@ -61,29 +44,8 @@ if($post_user_id != $user_id){
 
 $sql_1_2 = "INSERT INTO notifications (post_id, chat_room_id, post_user_id, notification_user_id) VALUES ('$id', '99999999', '$post_user_id', '$user_id')";
 
-if(mysqli_query($con,$sql_1_2)){
-
-
-$push = new Push("FebBook", $row_12['username']. " has commented on your Post !", null);
-	 
-$mPushNotification = $push->getPush();
-
-
-$sql_13 = "SELECT device_token FROM profile WHERE userid = '$post_user_id'";
-
-$res_13 = mysqli_query($con,$sql_13);
-
-$row_13 = mysqli_fetch_array($res_13);
-
-array_push($devicetoken, $row_13['device_token']);
-	
-$firebase = new Firebase(); 
-	 
-$firebase->send($devicetoken, $mPushNotification);
-
+if(mysqli_query($con,$sql_1_2))
 echo "Your Comment has been posted !";
-
-}
 
 else
 echo "Posting Comment Failed !";
@@ -95,6 +57,7 @@ echo "Your Comment has been posted !";
 
 else
 echo "Posting Comment Failed !";
+
 }
 
 
@@ -117,30 +80,8 @@ if($post_user_id != $user_id){
 
 $sql_2_2 = "INSERT INTO notifications (post_id, chat_room_id, post_user_id, notification_user_id) VALUES ('$id', '88888888', '$post_user_id', '$user_id')";
 
-if(mysqli_query($con,$sql_2_2)){
-
-
-$push = new Push("FebBook", $row_12['username']. " has liked your Post !", null);
-	 
-$mPushNotification = $push->getPush();
-
-
-$sql_13 = "SELECT device_token FROM profile WHERE userid = '$post_user_id'";
-
-$res_13 = mysqli_query($con,$sql_13);
-
-$row_13 = mysqli_fetch_array($res_13);
-
-array_push($devicetoken, $row_13['device_token']);
-
-	 
-$firebase = new Firebase(); 
-	 
-$firebase->send($devicetoken, $mPushNotification);
-	
-
+if(mysqli_query($con,$sql_2_2))
 echo "You have liked this post !";
-}
 
 else
 echo "Liking Failed !";
@@ -152,6 +93,7 @@ echo "You have liked this post !";
 
 else
 echo "Liking Failed !";
+
 }
 
 
@@ -174,30 +116,8 @@ if($post_user_id != $user_id){
 
 $sql_3_2 = "INSERT INTO notifications (post_id, chat_room_id, post_user_id, notification_user_id) VALUES ('$id', '77777777', '$post_user_id', '$user_id')";
 
-if(mysqli_query($con,$sql_3_2)){
-
-	
-$push = new Push("FebBook", $row_12['username']. " has disliked your Post !", null);
-	 
-$mPushNotification = $push->getPush();
-
-
-$sql_13 = "SELECT device_token FROM profile WHERE userid = '$post_user_id'";
-
-$res_13 = mysqli_query($con,$sql_13);
-
-$row_13 = mysqli_fetch_array($res_13);
-
-array_push($devicetoken, $row_13['device_token']);
-
-	 
-$firebase = new Firebase(); 
-	 
-$firebase->send($devicetoken, $mPushNotification);
-	
-
+if(mysqli_query($con,$sql_3_2))
 echo "You have disliked this post !";
-}
 
 else
 echo "Disliking Failed !";
@@ -209,6 +129,7 @@ echo "You have disliked this post !";
 
 else
 echo "Disliking Failed !";
+
 }
 
 
@@ -271,41 +192,18 @@ echo "Success !";
 else if($method === $methodname7)
 {
 
-$sql_7 = "SELECT post_type FROM posts WHERE post_id = '$id' AND user_id = '$user_id'";
+$sql_7 = "DELETE FROM posts WHERE post_id = '$id' AND user_id = '$user_id'";
 
-$res_7 = mysqli_query($con, $sql_7);
+$sql_7_1 = "DELETE FROM notifications WHERE post_id = '$id'";
 
-$row_7 = mysqli_fetch_array($res_7);
+$sql_7_2 = "DELETE FROM likes WHERE post_id = '$id'";
 
-$post_type = $row_7['post_type'];
+$sql_7_3 = "DELETE FROM dislikes WHERE post_id = '$id'";
 
-if($post_type === "Materials"){
-	
-$sql_7_1 = "SELECT post_description FROM posts WHERE post_id = '$id' AND user_id = '$user_id'";
-
-$res_7_1 = mysqli_query($con, $sql_7_1);
-
-$row_7_1 = mysqli_fetch_array($res_7_1);
-
-$post_description = $row_7_1['post_description'];
-
-unlink("StudyMaterials/$post_description");
-	
-}
+$sql_7_4 = "DELETE FROM comments WHERE post_id = '$id'";
 
 
-$sql_7_2 = "DELETE FROM posts WHERE post_id = '$id' AND user_id = '$user_id'";
-
-$sql_7_3 = "DELETE FROM notifications WHERE post_id = '$id'";
-
-$sql_7_4 = "DELETE FROM likes WHERE post_id = '$id'";
-
-$sql_7_5 = "DELETE FROM dislikes WHERE post_id = '$id'";
-
-$sql_7_6 = "DELETE FROM comments WHERE post_id = '$id'";
-
-
-if(mysqli_query($con,$sql_7_2) && mysqli_query($con,$sql_7_3) && mysqli_query($con,$sql_7_4) && mysqli_query($con,$sql_7_5) && mysqli_query($con,$sql_7_6))
+if(mysqli_query($con,$sql_7) && mysqli_query($con,$sql_7_1) && mysqli_query($con,$sql_7_2) && mysqli_query($con,$sql_7_3) && mysqli_query($con,$sql_7_4))
 echo "Your Post has been deleted !";
 
 else

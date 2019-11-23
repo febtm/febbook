@@ -3,8 +3,20 @@ package fmt.febulous.model;
 
 public class Notification {
 
+    static int total;
 
-    private String id, chat_id, post_userread, notify_userid, notify_username, notify_userimage, timestamp;
+    String id;
+    String chat_id;
+    String post_userread;
+    String notify_userid;
+    String notify_username;
+    String notify_userimage;
+    String timestamp;
+
+
+    public int getTotal(){return total;}
+
+    public void setTotal(int total){this.total = total;}
 
 
     public String getId(){return id;}
@@ -45,6 +57,8 @@ public class Notification {
         this.notify_username = null;
         this.notify_userimage = null;
         this.timestamp = null;
+
+        this.setTotal(this.getTotal() - 1);
 
     }
 

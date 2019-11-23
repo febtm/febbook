@@ -2,152 +2,91 @@ package fmt.febulous;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import fmt.febulous.helper.BasicFunctions;
-import fmt.febulous.helper.LSRMenu;
-import fmt.febulous.helper.Menu;
 
 
 public class ContactUs extends AppCompatActivity {
 
 
-    String cu_email, cu_name, cu_subject, cu_message;
+    Button button_submit;
 
-    EditText CU_NAME, CU_EMAIL, CU_SUBJECT, CU_MESSAGE;
+    private String c_email, c_name, c_subject, c_message;
 
-    Button CU_SEND_MESSAGE;
+    private EditText C_NAME, C_EMAIL, C_SUBJECT, C_MESSAGE;
 
-    ImageButton MENU_BUTTON, CU_NAME_CANCEL, CU_EMAIL_CANCEL, CU_SUBJECT_CANCEL, CU_MESSAGE_CANCEL;
+    String actionbar_title;
 
     private BasicFunctions basicFunctions;
-
-    private Menu menu;
-
-    private LSRMenu lsrMenu;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_contact_us);
 
-        menu = new Menu(ContactUs.this);
+        actionbar_title="\tCONTACT US";
+        setTitle(actionbar_title);
 
-        lsrMenu = new LSRMenu(ContactUs.this);
+        basicFunctions = new BasicFunctions(this);
 
-        basicFunctions = new BasicFunctions(ContactUs.this);
+        C_NAME = (EditText) findViewById(R.id.c_name);
 
-        CU_NAME = findViewById(R.id.cu_name);
-        CU_EMAIL = findViewById(R.id.cu_email);
-        CU_SUBJECT = findViewById(R.id.cu_subject);
-        CU_MESSAGE = findViewById(R.id.cu_message);
-        CU_SEND_MESSAGE = findViewById(R.id.cu_send_message);
+        C_EMAIL = (EditText) findViewById(R.id.c_email);
 
-        MENU_BUTTON = findViewById(R.id.cu_menu);
+        C_SUBJECT = (EditText) findViewById(R.id.c_subject);
 
-        if(basicFunctions.isLoggedIn()) {
+        C_MESSAGE=(EditText)findViewById(R.id.c_message);
 
-            MENU_BUTTON.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    menu.LeftDrawer.toggleLeftDrawer();
 
-                }
-            });
+        button_submit = (Button)findViewById(R.id.c_send);
 
-        }
-
-        else {
-
-            MENU_BUTTON.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    lsrMenu.LeftDrawer.toggleLeftDrawer();
-
-                }
-            });
-        }
-
-        CU_NAME_CANCEL = findViewById(R.id.cu_name_cancel);
-
-        CU_NAME_CANCEL.setOnClickListener(new View.OnClickListener() {
+        button_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                CU_NAME.setText("");
+                c_name = C_NAME.getText().toString();
 
-            }
-        });
+                c_email = C_EMAIL.getText().toString();
 
-        CU_EMAIL_CANCEL = findViewById(R.id.cu_email_cancel);
+                c_subject = C_SUBJECT.getText().toString();
 
-        CU_EMAIL_CANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                c_message = C_MESSAGE.getText().toString();
 
-                CU_EMAIL.setText("");
+                if (TextUtils.isEmpty(c_name)) {
+                    C_NAME.setError("Type in your Name !");
 
-            }
-        });
+                } else if (TextUtils.isEmpty(c_email) || !android.util.Patterns.EMAIL_ADDRESS.matcher(c_email).matches()) {
+                    C_EMAIL.setError("Invalid Email-ID !");
 
-        CU_SUBJECT_CANCEL = findViewById(R.id.cu_subject_cancel);
+                } else if (TextUtils.isEmpty(c_subject)) {
+                    C_SUBJECT.setError("Type in your Subject !");
 
-        CU_SUBJECT_CANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                CU_SUBJECT.setText("");
-
-            }
-        });
-
-        CU_MESSAGE_CANCEL = findViewById(R.id.cu_message_cancel);
-
-        CU_MESSAGE_CANCEL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                CU_MESSAGE.setText("");
-
-            }
-        });
-
-        CU_SEND_MESSAGE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                cu_name = CU_NAME.getText().toString();
-
-                cu_email = CU_EMAIL.getText().toString();
-
-                cu_subject = CU_SUBJECT.getText().toString();
-
-                cu_message = CU_MESSAGE.getText().toString();
-
-                if (TextUtils.isEmpty(cu_name)) {
-                    CU_NAME.setError("Type in your Name !");
-
-                } else if (TextUtils.isEmpty(cu_email) || !android.util.Patterns.EMAIL_ADDRESS.matcher(cu_email).matches()) {
-                    CU_EMAIL.setError("Invalid Email-ID !");
-
-                } else if (TextUtils.isEmpty(cu_subject)) {
-                    CU_SUBJECT.setError("Type in the Subject !");
-
-                } else if (TextUtils.isEmpty(cu_message)) {
-                    CU_MESSAGE.setError("Type in the Message !");
+                } else if (TextUtils.isEmpty(c_message)) {
+                    C_MESSAGE.setError("Type in your Message !");
 
                 } else {
 
-                    if(basicFunctions.isConnectingToInternet())
-                        basicFunctions.sendEmail("ContactUs", cu_email, cu_name, cu_subject, cu_message);
+                    if(basicFunctions.isConnectingToInternet()) {
+
+                        basicFunctions.sendEmail("Contact", c_name, c_email, c_subject, c_message);
+
+                        Intent intent = new Intent(ContactUs.this, ContactUs.class);
+                        startActivity(intent);
+
+                        Toast.makeText(ContactUs.this, "Your Message has been sent : Kindly wait until our Team responds to your Message !", Toast.LENGTH_LONG).show();
+
+                    }
 
                     else {
 
@@ -155,31 +94,10 @@ public class ContactUs extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which){
-
                                     case DialogInterface.BUTTON_POSITIVE:
 
-                                        if(basicFunctions.isConnectingToInternet())
-                                            basicFunctions.sendEmail("ContactUs", cu_email, cu_name, cu_subject, cu_message);
-
-                                        else {
-
-                                            Toast.makeText(ContactUs.this,
-                                                    "No Internet Connection. Try again later !",
-                                                    Toast.LENGTH_LONG).show();
-
-                                            dialog.dismiss();
-
-                                        }
-
-                                        break;
-
-                                    case DialogInterface.BUTTON_NEGATIVE:
-
-                                        Toast.makeText(ContactUs.this,
-                                                "No Internet Connection. Try again later !",
-                                                Toast.LENGTH_LONG).show();
-
-                                        dialog.dismiss();
+                                        Intent intent = new Intent(ContactUs.this, ContactUs.class);
+                                        startActivity(intent);
 
                                         break;
 
@@ -188,9 +106,8 @@ public class ContactUs extends AppCompatActivity {
                         };
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(ContactUs.this);
-                        builder.setMessage("No Internet Connection. Try again ?")
-                                .setPositiveButton("Yes", dialogClickListener)
-                                .setNegativeButton("No", dialogClickListener).show();
+                        builder.setMessage("Network Failure : Please check your Internet Connection !")
+                                .setPositiveButton("Try Again ... ", dialogClickListener).show();
 
                     }
 
@@ -198,6 +115,13 @@ public class ContactUs extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_normal, menu);
+        return true;
     }
 
 }

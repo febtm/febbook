@@ -6,8 +6,8 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.ImageButton;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -20,7 +20,7 @@ import fmt.febulous.R;
 public class ViewImage extends AppCompatActivity {
 
 
-    String image;
+    String actionbar_title, image;
 
     ImageView IMAGE;
 
@@ -31,18 +31,11 @@ public class ViewImage extends AppCompatActivity {
 
         setContentView(R.layout.activity_view_image);
 
-        IMAGE = findViewById(R.id.vi_view_image);
+        IMAGE = (ImageView) findViewById(R.id.iv_view_image);
 
-        ImageButton BACK_BUTTON = findViewById(R.id.vi_back);
+        actionbar_title="\tVIEW IMAGE";
 
-        BACK_BUTTON.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                finish();
-
-            }
-        });
+        setTitle(actionbar_title);
 
         Intent intent = getIntent();
 
@@ -62,9 +55,7 @@ public class ViewImage extends AppCompatActivity {
                 FileInputStream fis = null;
 
                 try {
-
                     fis = new FileInputStream(f);
-
                 } catch (FileNotFoundException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -94,4 +85,22 @@ public class ViewImage extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_normal, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

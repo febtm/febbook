@@ -1,9 +1,7 @@
 {
   "project_info": {
     "project_number": "753593351142",
-    "firebase_url": "https://fmt-febulous.firebaseio.com",
-    "project_id": "fmt-febulous",
-    "storage_bucket": "fmt-febulous.appspot.com"
+    "project_id": "fmt-febulous"
   },
   "client": [
     {
@@ -15,45 +13,21 @@
       },
       "oauth_client": [
         {
-          "client_id": "753593351142-tukcdmkhk35dnc48t7gp28bn74aal224.apps.googleusercontent.com",
+          "client_id": "753593351142-o632cnc5gs5k7g7rja3q9pl48ghrvige.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "fmt.febulous",
-            "certificate_hash": "28e67941af81c2cfe9f97f20ee93174b8a256f8a"
+            "certificate_hash": "BC2805C03F55BCE46ACFA1A412A03E8E21A43EBD"
           }
         },
         {
-          "client_id": "753593351142-tljkoc1dn4g4nmlno82qf966d6jjbr6h.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "fmt.febulous",
-            "certificate_hash": "bc2805c03f55bce46acfa1a412a03e8e21a43ebd"
-          }
-        },
-        {
-          "client_id": "753593351142-0e8jscsokt8e5rmaom8c7qmhv24rt235.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "fmt.febulous",
-            "certificate_hash": "e634a81c56cde86703a822097a36fee1714540d4"
-          }
-        },
-        {
-          "client_id": "753593351142-nr9pvvqio7nsq202gi0onr5tq4rrmcbo.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "fmt.febulous",
-            "certificate_hash": "40a4f1886c664af7c18409ba01295d604140f22d"
-          }
-        },
-        {
-          "client_id": "753593351142-su804olcggmbuc0okc064su3tuv4nkco.apps.googleusercontent.com",
+          "client_id": "753593351142-hrp32hpljo61a4tatmp1r2k3enbcnea6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC7a-CNkcFg1ZHNgPOG6vLKfkroatk5CbI"
+          "current_key": "AIzaSyAC4xO_sBHZGTVDsSDqmrbLhB6qQzvAAwA"
         }
       ],
       "services": {
@@ -64,16 +38,11 @@
           }
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "753593351142-su804olcggmbuc0okc064su3tuv4nkco.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 2
+          "status": 1
         }
       }
     }

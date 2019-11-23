@@ -2,50 +2,57 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:baselineAligned="false"
+    android:padding="5dp">
 
-    <Button
-        android:id="@+id/fetch_old"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/fetch_older_messages"
-        android:visibility="gone"
-        android:textColor="@color/colorSecondary"
-        android:background="@color/colorPrimaryTransparent77"
-        android:layout_margin="10dp"
-        android:padding="5dp"
-        android:textStyle="bold"/>
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:baselineAligned="false">
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_weight="4"
+        android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/mes_i_message"
+        android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="5dp"
         android:textStyle="bold"
-        android:autoLink="web"
         android:textColor="@color/colorPrimary"
         android:textIsSelectable="true"
-        android:background="@drawable/mes_white_bubble"
-        android:textSize="14sp" />
+        android:background="@drawable/messages_green_bubble"
+        android:textSize="14sp"
+        />
 
     <TextView
-        android:id="@+id/mes_i_timestamp"
+        android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/message"
+        android:layout_marginBottom="40dp"
+        android:layout_marginStart="5dp"
+        android:paddingTop="5dp"
         android:textSize="12sp"
-        android:textColor="@color/colorQuaternary" />
+        android:textColor="@color/colorQuaternary"/>
 
-</LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="60dp"
+        android:layout_marginEnd="5dp">
+
+
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/chat_userimage"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
 
 </LinearLayout>

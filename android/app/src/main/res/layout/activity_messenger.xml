@@ -1,61 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:background="@drawable/mes_background"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true">
 
-    <FrameLayout
+    <android.support.design.widget.AppBarLayout
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:background="@android:color/transparent">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <ImageButton
-            android:id="@+id/mes_menu"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:contentDescription="@null"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/app_menu"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            android:text="@string/messenger"
-            android:textSize="18sp"
-            android:textColor="@color/colorSecondary" />
+    </android.support.design.widget.AppBarLayout>
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:contentDescription="@null"
-            android:layout_gravity="center_vertical|end"
-            android:background="@drawable/me_messenger"/>
+    <include layout="@layout/activity_messenger_content"/>
 
-    </FrameLayout>
-
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/mes_adView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        ads:adSize="BANNER"
-        android:layout_margin="10dp"
-        ads:adUnitId="@string/mes_admob_banner">
-    </com.google.android.gms.ads.AdView>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/mes_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="vertical"
-        android:layout_marginBottom="20dp"/>
-
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

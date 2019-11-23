@@ -1,90 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:background="@drawable/pv_background">
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:padding="10dp">
-
-        <ImageButton
-            android:id="@+id/pv_back"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:contentDescription="@null"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/app_cancel"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            android:text="@string/view_a_post"
-            android:textSize="18sp"
-            android:textColor="@color/colorSecondary" />
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:contentDescription="@null"
-            android:layout_gravity="center_vertical|end"
-            android:background="@drawable/pv_view"/>
-
-    </FrameLayout>
-
 <LinearLayout
-    android:id="@+id/pv_item_LL"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginLeft="10dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginRight="10dp"
-    android:layout_marginBottom="20dp"
+    android:id = "@+id/pv_item_LL"
+    android:layout_margin="10dp"
     android:background="@color/colorGK">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorSecondaryTransparent77"
         android:layout_margin="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorSecondaryTransparent77"
         android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/pv_delete"
+        <LinearLayout
+            android:id="@+id/pv_LL_delete"
+            android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:layout_width="20dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginRight="3dp"
-            android:layout_marginLeft="3dp"
+            android:padding="5dp"
             android:visibility="gone"
-            android:contentDescription="@null"
-            android:layout_gravity="end"
-            android:background="@drawable/app_cancel"/>
+            android:background="@color/colorTertiary"
+            android:gravity="end">
+
+            <ImageButton
+                android:id="@+id/pv_delete"
+                android:layout_width="10dp"
+                android:layout_height="match_parent"
+                android:contentDescription="@null"
+                android:background="@drawable/app_delete_on"/>
+
+        </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/pv_item_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="5dp">
+            android:padding="5dp"
+            android:background="@color/colorTertiary">
 
             <LinearLayout
-                android:id="@+id/pv_user_profile"
+                android:id="@+id/pv_userprofile"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -92,7 +53,7 @@
                 android:layout_marginEnd="5dp">
 
                 <com.pkmmte.view.CircularImageView
-                    android:id="@+id/pv_item_user_image"
+                    android:id="@+id/pv_item_userimage"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"/>
@@ -102,7 +63,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/username"
-                    android:textColor="@color/colorSecondary"
+                    android:textColor="@color/colorPrimary"
                     android:textStyle="bold"
                     android:gravity="center"
                     android:textSize="14sp"
@@ -110,22 +71,23 @@
 
             </LinearLayout>
 
+
             <LinearLayout
+                android:id="@+id/post_view_topics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_gravity="start">
 
                 <TextView
-                    android:id="@+id/pv_item_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/title"
                     android:gravity="center"
                     android:textSize="16sp"
-                    android:autoLink="web"
                     android:layout_marginBottom="5dp"
                     android:textStyle="bold"
+                    android:id="@+id/pv_item_title"
                     android:textColor="@color/colorPrimary" />
 
                 <ImageView
@@ -137,86 +99,101 @@
                     android:layout_marginBottom="5dp"
                     android:scaleType="centerCrop"
                     android:layout_gravity="center"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    />
+
 
                 <TextView
-                    android:id="@+id/pv_item_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/description"
                     android:layout_gravity="center_vertical"
+                    android:id="@+id/pv_item_description"
                     android:textSize="14sp"
-                    android:autoLink="web"
-                    android:layout_marginBottom="5dp"
-                    android:textColor="@color/colorTertiary" />
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/colorAccent" />
+
 
                 <Button
                     android:id="@+id/pv_download_file"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/pv_download_file"
+                    android:layout_height="60dp"
+                    android:text="@string/post_view_download_file"
                     android:visibility="gone"
                     android:padding="10dp"
+                    android:drawableEnd="@drawable/app_download"
                     android:textStyle="bold"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginBottom="10dp"
                     android:textSize="14sp"
-                    android:textColor="@color/colorSecondary"
-                    android:background="@color/colorPrimaryTransparent77"/>
+                    android:textColor="@color/colorTertiary"
+                    android:background="@color/colorSecondary"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:layout_height="50dp"
+                    android:background="@drawable/item_green_border">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="bottom|end"
                     android:orientation="horizontal"
-                    android:background="@color/colorSecondaryTransparent77"
-                    android:padding="5dp">
+                    android:background="@color/colorTertiary"
+                    android:padding="5dp"
+                    android:weightSum="4.25">
 
                     <ImageButton
                         android:id="@+id/pv_item_like"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
                         android:contentDescription="@null"
                         android:background="@drawable/pv_like"/>
 
                     <TextView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:text="@string/count"
-                        android:background="@color/colorPrimaryTransparent77"
+                        android:layout_weight="0.25"
+                        android:background="@color/colorSecondary"
                         android:gravity="center"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginEnd="5dp"
                         android:id="@+id/pv_item_like_count"
-                        android:textColor="@color/colorSecondary" />
+                        android:textColor="@color/colorTertiary" />
 
                     <ImageButton
                         android:id="@+id/pv_item_dislike"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginEnd="30dp"
+                        android:layout_width="40dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
                         android:contentDescription="@null"
                         android:background="@drawable/pv_dislike"/>
 
                     <ImageButton
-                        android:id="@+id/pv_item_facebook"
+                        android:id="@+id/pv_item_facebook_share"
                         android:layout_width="40dp"
-                        android:layout_height="40dp"
                         android:layout_gravity="bottom"
+                        android:layout_weight="1"
                         android:contentDescription="@null"
-                        android:layout_marginEnd="10dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
                         android:background="@drawable/pv_facebook"/>
 
                     <ImageButton
-                        android:id="@+id/pv_item_twitter"
-                        android:layout_height="40dp"
+                        android:id="@+id/pv_item_twitter_share"
                         android:layout_width="40dp"
+                        android:layout_weight="1"
                         android:contentDescription="@null"
+                        android:layout_height="match_parent"
                         android:background="@drawable/pv_twitter"/>
+
+                </LinearLayout>
 
                 </LinearLayout>
 
@@ -230,14 +207,16 @@
                     android:gravity="end"
                     android:id="@+id/pv_item_date" />
 
+
             </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:background="@color/colorTertiary"
+            android:layout_marginBottom="2dp">
 
         <TextView
             android:id="@+id/pv_report"
@@ -246,99 +225,84 @@
             android:text="@string/report_post"
             android:textSize="12sp"
             android:layout_gravity="end"
-            android:layout_marginTop="5dp"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/colorSecondary"
             android:visibility="visible"
             android:paddingEnd="5dp"
-            tools:ignore="RtlSymmetry" />
-
-            <com.google.android.gms.ads.AdView
-                android:id="@+id/pv_adView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                ads:adSize="BANNER"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                ads:adUnitId="@string/pv_admob_banner">
-            </com.google.android.gms.ads.AdView>
-
-        </LinearLayout>
-
-        <fmt.febulous.helper.PVCommentListView
-            android:id="@+id/pv_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:divider="@color/colorSecondary"
-            android:dividerHeight="1.5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:visibility="gone">
-        </fmt.febulous.helper.PVCommentListView>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryTransparent77"
-            android:gravity="bottom"
-            android:padding="5dp"
-            android:layout_gravity="center|bottom">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="40dp"
-                android:layout_marginEnd="40dp"
-                android:background="@color/colorPrimaryTransparent77"
-                tools:ignore="RtlHardcoded">
-
-                <EditText
-                    android:id="@+id/pv_comment"
-                    android:padding="5dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="vertical"
-                    android:textSize="14sp"
-                    android:inputType="textCapSentences|textMultiLine"
-                    android:paddingRight="30dp"
-                    android:paddingEnd="30dp"
-                    android:layout_gravity="center"
-                    android:hint="@string/pv_type_in_your_comment"
-                    android:background="@color/colorPrimaryTransparent77"
-                    android:textColorHint="@color/colorSecondary"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorSecondary"
-                    tools:ignore="RtlSymmetry" />
-
-                <ImageButton
-                    android:id="@+id/pv_comment_cancel"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center|end"
-                    android:background="@drawable/app_cancel"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:contentDescription="@null" />
-
-            </FrameLayout>
-
-            <ImageButton
-                android:id="@+id/pv_comment_send"
-                android:layout_width="30dp"
-                android:layout_gravity="center|end"
-                android:layout_height="30dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/app_go"
-                android:contentDescription="@null" />
+            android:paddingBottom="5dp"
+            android:background="@color/colorTertiary" />
 
         </FrameLayout>
+
+        <fmt.febulous.helper.CommentsListView
+            android:id="@+id/pv_frag_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@color/colorPrimary"
+            android:dividerHeight="1.5dp"
+            android:layout_marginBottom="2dp"
+            android:visibility="gone"
+            android:background="@color/colorTertiary">
+        </fmt.febulous.helper.CommentsListView>
+
+
+        <LinearLayout
+            android:id="@+id/pv_list_item_LL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorTertiary"
+            android:orientation="horizontal">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_margin="5dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/item_green_border">
+
+                        <EditText
+                            android:id="@+id/pv_user_comment"
+                            android:gravity="start"
+                            android:padding="5dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="vertical"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:hint="@string/post_view_type_in_your_comment"
+                            android:background="@color/colorTertiary"
+                            android:textColorHint="@color/colorAccent"
+                            android:textColor="@color/colorPrimary" />
+
+                    </LinearLayout>
+
+
+                    <Button
+                        android:id="@+id/pv_post_comment"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_height="30dp"
+                        android:text="@string/post_view_post_comment"
+                        android:textStyle="bold"
+                        android:padding="5dp"
+                        android:layout_margin="5dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/colorPrimary"
+                        android:background="@color/colorTertiary"/>
+
+                </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
   </ScrollView>
-
-</LinearLayout>
 
 </LinearLayout>

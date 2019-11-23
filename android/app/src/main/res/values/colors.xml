@@ -3,16 +3,10 @@
 
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#1565C0</color>
-    <color name="colorPrimaryTransparent77">#772196F3</color>
-
-    <color name="colorSecondary">#FFFFFF</color>
-    <color name="colorSecondaryTransparent77">#77FFFFFF</color>
-
-    <color name="colorTertiary">#808080</color>
-    <color name="colorTertiaryTransparent33">#33808080</color>
-
-    <color name="colorQuaternary">#E040FB</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#E040FB</color>
+    <color name="colorSecondary">#76FF03</color>
+    <color name="colorTertiary">#FFFFFF</color>
+    <color name="colorQuaternary">#FF8A80</color>
 
     <color name="colorGK">#9C27B0</color>
     <color name="colorEvents">#F44336</color>

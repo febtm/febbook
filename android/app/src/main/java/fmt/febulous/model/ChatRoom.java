@@ -7,9 +7,11 @@ import java.io.Serializable;
 public class ChatRoom implements Serializable {
 
 
-    private String chatroom_id, user1_id, user2_id, user1_name, user2_name,
+    String chatroom_id, user1_id, user2_id, user1_name, user2_name,
             user1_image ,user2_image, user1_online, user2_online,
             user1_read, user2_read, timestamp;
+
+    static int total;
 
 
     public ChatRoom() {}
@@ -21,6 +23,11 @@ public class ChatRoom implements Serializable {
 
     public void setId(String id) {
         this.chatroom_id = id;
+    }
+
+
+    public void setTotal(int total) {
+        this.total = total;
     }
 
 
