@@ -5,7 +5,7 @@ public class EndPoints {
 
 
     //public static final String BASE_URL = "http://10.0.3.2/febulous/";
-    public static final String BASE_URL = "http://www.febulous.net16.net/febulous/";
+    public static final String BASE_URL = "http://www.febulous.org/febulous/";
 
     public static final String ADD_CHAT = BASE_URL + "addChat.php";
     public static final String BASIC_FUNCTIONS = BASE_URL + "basicFunctions.php";

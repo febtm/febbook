@@ -1,9 +1,9 @@
 <?php
 
-$db_name = "a6431137_febulou";
-$mysql_user = "a6431137_febulou";
-$mysql_pass = "Febu123007";
-$server_name = "mysql11.000webhost.com";
+$db_name = "febulous";
+$mysql_user = "root";
+$mysql_pass = "";
+$server_name = "localhost";
 
 $con = mysqli_connect($server_name,$mysql_user,$mysql_pass,$db_name);
 
