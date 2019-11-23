@@ -1,0 +1,240 @@
+<resources>
+
+    <string name="app_name">FebBook</string>
+
+    <string name="fb_app_id">1123721754365610</string>
+
+
+	<string name="li_admob_banner">ca-app-pub-6196885651315287/6927957052</string>
+
+    <string name="hp_admob_banner">ca-app-pub-6196885651315287/2438881851</string>
+
+    <string name="pv_admob_banner">ca-app-pub-6196885651315287/8345814659</string>
+
+    <string name="pi_admob_banner">ca-app-pub-6196885651315287/6869081450</string>
+
+    <string name="p_admob_banner">ca-app-pub-6196885651315287/9822547855</string>
+
+    <string name="mes_admob_banner">ca-app-pub-6196885651315287/7567085456</string>
+
+
+    <string-array name="lsr_menu_titles">
+        <item>Log In</item>
+        <item>Sign In</item>
+        <item>Recover Password</item>
+        <item>Contact Us</item>
+        <item>Rate Us</item>
+        <item>Find Us</item>
+        <item>Exit</item>
+    </string-array>
+
+    <array name="lsr_menu_icons">
+        <item>@drawable/lsr_me_login</item>
+        <item>@drawable/lsr_me_signin</item>
+        <item>@drawable/lsr_me_rec_pass</item>
+        <item>@drawable/me_contact_us</item>
+        <item>@drawable/me_rate_us</item>
+        <item>@drawable/me_find_us</item>
+        <item>@drawable/lsr_me_exit</item>
+    </array>
+
+
+    <string-array name="menu_titles">
+        <item>Home</item>
+        <item>Profile</item>
+        <item>Messenger</item>
+        <item>Notifications</item>
+        <item>Contact Us</item>
+        <item>Rate Us</item>
+        <item>Find Us</item>
+        <item>Log Out</item>
+    </string-array>
+
+    <array name="menu_icons">
+        <item>@drawable/me_home</item>
+        <item>@drawable/me_profile</item>
+        <item>@drawable/me_messenger</item>
+        <item>@drawable/me_notifications</item>
+        <item>@drawable/me_contact_us</item>
+        <item>@drawable/me_rate_us</item>
+        <item>@drawable/me_find_us</item>
+        <item>@drawable/me_logout</item>
+    </array>
+
+
+    <string name="log_in">Log In</string>
+
+    <string name="login_enter_credentials">Enter Your Credentials</string>
+
+    <string name="login_log_in">Log In</string>
+
+
+    <string name="sign_in">Sign In</string>
+
+    <string name="si_sign_up">Enter Your Credentials to Sign Up for a Febulous Experience !</string>
+
+    <string name="si_tandc">By Signing In, You agree to our Terms and Conditions.\nClick Here to download and view it !</string>
+
+    <string name="si_sign_in">Sign In</string>
+
+    <string name="si_sign_in_with">Or\n\nSign In with</string>
+
+
+    <string name="home">Home</string>
+
+
+    <string name="menu">Menu</string>
+
+
+    <string name="messenger">Messenger</string>
+
+
+    <string name="notifications">Notifications</string>
+
+
+    <string name="name">Name</string>
+
+    <string name="email_id">Email-Id</string>
+
+    <string name="type_in_your_message">Type in your Message &#8230;</string>
+
+    <string name="send_message">Send Message</string>
+
+    <string name="title">Title</string>
+
+    <string name="description">Description</string>
+
+    <string name="username">Username</string>
+
+    <string name="timestamp">Timestamp</string>
+
+    <string name="report_post">Report this Post</string>
+
+    <string name="type">Type</string>
+
+    <string name="digits">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
+
+    <string name="password">Password</string>
+
+    <string name="count">0</string>
+
+    <string name="search_posts">Search Posts &#8230;</string>
+
+    <string name="search_more">Search More</string>
+
+    <string name="fetch_older_messages">Fetch Older Messages</string>
+
+
+    <string name="profile">Profile</string>
+
+    <string name="about_me">About Me</string>
+
+    <string name="date_of_birth">Birth Date</string>
+
+    <string name="gender">Gender</string>
+
+    <string name="change_the_picture">Change The Picture</string>
+
+    <string name="male">Male</string>
+
+    <string name="female">Female</string>
+
+
+    <string name="hp_db">DASHBOARD</string>
+
+    <string name="hp_db_gk">GENERAL DIGEST</string>
+
+    <string name="hp_db_qna">Q N A SECTION</string>
+
+    <string name="hp_db_materials">STUDY MATERIALS</string>
+
+    <string name="hp_db_tat">TEACH A TOPIC</string>
+
+    <string name="hp_db_ideas">IDEAS GALORE</string>
+
+    <string name="hp_db_events">EVENTS AND INVITES</string>
+
+
+    <string name="p_search_users">Search Users &#8230;</string>
+
+    <string name="p_contact_user">Contact This User</string>
+
+    <string name="p_report_user">Report This User</string>
+
+    <string name="p_personal_details">Personal Details</string>
+
+    <string name="p_other_details">Other Details</string>
+
+    <string name="p_course">Course</string>
+
+    <string name="p_college">College</string>
+
+    <string name="p_department">Department</string>
+
+    <string name="p_fa_edit_profile">EDIT PROFILE</string>
+
+    <string name="p_fa_view_profile">VIEW PROFILE</string>
+
+    <string name="p_fa_view_posts">VIEW POSTS</string>
+
+
+    <string name="edit_profile">Edit Profile</string>
+
+    <string name="ep_username">Username *</string>
+
+    <string name="ep_email_id">Email-Id *</string>
+
+    <string name="ep_gender_male">M</string>
+
+    <string name="ep_gender_female">F</string>
+
+    <string name="ep_current_password">Current Password *</string>
+
+    <string name="ep_new_password">New Password *</string>
+
+    <string name="ep_confirm_new_password">Confirm New Password *</string>
+
+    <string name="ep_edit">Edit</string>
+
+
+    <string name="post_item">Post To FebBook</string>
+
+    <string name="pi_add_picture">Add A Picture</string>
+
+    <string name="pi_add_file">Add A File</string>
+
+    <string name="pi_share_on_facebook">Share On Facebook</string>
+
+    <string name="pi_share_on_twitter">Share On Twitter</string>
+
+    <string name="pi_post">Post</string>
+
+
+    <string name="view_a_post">View A Post</string>
+
+    <string name="pv_download_file">Download This File</string>
+
+    <string name="pv_type_in_your_comment">Type in your Comment &#8230;</string>
+
+    <string name="pv_report_comment">Report this Comment</string>
+
+
+    <string name="view_an_image">View An Image</string>
+
+
+    <string name="contact_us">Contact Us</string>
+
+    <string name="cu_subject">Subject</string>
+
+    <string name="cu_contact_us">Send us your valuable feedback describing your experience while using FebBook.
+        \n\nWe will be happy to reply and to take up every suggestion seriously thereby making each of our
+        user\'s experience an even more Febulous One !</string>
+
+
+    <string name="recover_password">Recover Password</string>
+
+    <string name="rp_send_email">Send Recovery Email</string>
+
+    <string name="rp_enter_email">Enter Your Email-Id</string>
+
+</resources>

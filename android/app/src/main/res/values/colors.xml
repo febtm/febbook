@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1565C0</color>
+    <color name="colorPrimaryTransparent77">#772196F3</color>
+
+    <color name="colorSecondary">#FFFFFF</color>
+    <color name="colorSecondaryTransparent77">#77FFFFFF</color>
+
+    <color name="colorTertiary">#808080</color>
+    <color name="colorTertiaryTransparent33">#33808080</color>
+
+    <color name="colorQuaternary">#E040FB</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="colorGK">#9C27B0</color>
+    <color name="colorEvents">#F44336</color>
+    <color name="colorIdeas">#4CAF50</color>
+    <color name="colorQnA">#FFEA00</color>
+    <color name="colorTeach">#3F51B5</color>
+    <color name="colorStudyMaterials">#F57C00</color>
+
+</resources>

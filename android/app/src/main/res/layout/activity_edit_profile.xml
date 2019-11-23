@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/ep_background"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="10dp">
+
+        <ImageButton
+            android:id="@+id/ep_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:contentDescription="@null"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/app_cancel"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:text="@string/edit_profile"
+            android:textSize="18sp"
+            android:textColor="@color/colorSecondary" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@null"
+            android:layout_gravity="center_vertical|end"
+            android:background="@drawable/ep_edit"/>
+
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="20dp">
+
+        <ImageView
+            android:id="@+id/ep_user_cover_button"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:contentDescription="@null" />
+
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/ep_user_button"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center|bottom"
+            android:layout_marginBottom="20dp" />
+
+    </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_username_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:hint="@string/ep_username"
+                android:digits="@string/digits"
+                android:textColor="@color/colorSecondary"
+                android:maxLength="8"
+                android:textSize="15sp"
+                android:textColorHint="@color/colorSecondary"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:inputType="textCapWords"
+                android:gravity="start"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                tools:ignore="RtlSymmetry" />
+
+            <ImageButton
+                android:id="@+id/ep_user_name_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_about_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:hint="@string/about_me"
+                android:textColor="@color/colorSecondary"
+                android:textSize="15sp"
+                android:textColorHint="@color/colorSecondary"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:inputType="textCapSentences"
+                android:gravity="start"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                tools:ignore="RtlSymmetry" />
+
+            <ImageButton
+                android:id="@+id/ep_about_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_name_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:hint="@string/name"
+                android:textColor="@color/colorSecondary"
+                android:textSize="15sp"
+                android:textColorHint="@color/colorSecondary"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:inputType="textCapWords"
+                android:gravity="start"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                tools:ignore="RtlSymmetry" />
+
+            <ImageButton
+                android:id="@+id/ep_name_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_email_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:hint="@string/ep_email_id"
+                android:textColor="@color/colorSecondary"
+                android:textSize="15sp"
+                android:textColorHint="@color/colorSecondary"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:inputType="textEmailAddress"
+                android:gravity="start"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                tools:ignore="RtlSymmetry" />
+
+            <ImageButton
+                android:id="@+id/ep_email_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp">
+
+            <TextView
+                android:id="@+id/ep_gender_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/gender"
+                android:textStyle="bold"
+                android:background="@color/colorPrimaryTransparent77"
+                android:textColor="@color/colorSecondary"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:layout_alignParentTop="true"
+                android:gravity="center_vertical" />
+
+            <TextView
+                android:id="@+id/ep_gender_m"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/ep_gender_male"
+                android:textColor="@color/colorSecondary"
+                android:layout_toStartOf="@+id/ep_gender_switch"
+                android:layout_alignBottom="@+id/ep_gender_text"
+                android:gravity="center_vertical"
+                android:padding="10dp"
+                tools:ignore="RelativeOverlap" />
+
+            <Switch
+                android:id="@+id/ep_gender_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:layout_alignTop="@+id/ep_gender_m"
+                android:layout_toStartOf="@+id/ep_gender_f"
+                android:layout_alignBottom="@+id/ep_gender_m"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/ep_gender_f"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/ep_gender_female"
+                android:textStyle="bold"
+                android:textColor="@color/colorSecondary"
+                android:layout_alignBottom="@+id/ep_gender_switch"
+                android:layout_alignParentEnd="true"
+                android:gravity="center_vertical"
+                android:padding="10dp"/>
+
+        </RelativeLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_bdate_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:hint="@string/date_of_birth"
+                android:textColor="@color/colorSecondary"
+                android:textSize="15sp"
+                android:textColorHint="@color/colorSecondary"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:inputType="textEmailAddress"
+                android:gravity="start"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                tools:ignore="RtlSymmetry" />
+
+            <ImageButton
+                android:id="@+id/ep_bdate_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_c_password_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/ep_current_password"
+                android:inputType="textPassword"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColorHint="@color/colorSecondary"
+                android:textColor="@color/colorSecondary"
+                tools:ignore="RtlSymmetry" />
+
+            <CheckBox
+                android:id="@+id/ep_c_show_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|end"
+                android:layout_marginRight="30dp"
+                android:layout_marginEnd="30dp" />
+
+            <ImageButton
+                android:id="@+id/ep_c_password_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_n_password_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/ep_new_password"
+                android:inputType="textPassword"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColorHint="@color/colorSecondary"
+                android:textColor="@color/colorSecondary"
+                tools:ignore="RtlSymmetry" />
+
+            <CheckBox
+                android:id="@+id/ep_n_show_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|end"
+                android:layout_marginRight="30dp"
+                android:layout_marginEnd="30dp" />
+
+            <ImageButton
+                android:id="@+id/ep_n_password_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_cn_password_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/ep_confirm_new_password"
+                android:inputType="textPassword"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColorHint="@color/colorSecondary"
+                android:textColor="@color/colorSecondary"
+                tools:ignore="RtlSymmetry" />
+
+            <CheckBox
+                android:id="@+id/ep_cn_show_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|end"
+                android:layout_marginRight="30dp"
+                android:layout_marginEnd="30dp" />
+
+            <ImageButton
+                android:id="@+id/ep_cn_password_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_course_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:hint="@string/p_course"
+                android:textColor="@color/colorSecondary"
+                android:textSize="15sp"
+                android:textColorHint="@color/colorSecondary"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:inputType="textCapWords"
+                android:gravity="start"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                tools:ignore="RtlSymmetry" />
+
+            <ImageButton
+                android:id="@+id/ep_course_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_college_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:hint="@string/p_college"
+                android:textColor="@color/colorSecondary"
+                android:textSize="15sp"
+                android:textColorHint="@color/colorSecondary"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:inputType="textCapWords"
+                android:gravity="start"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                tools:ignore="RtlSymmetry" />
+
+            <ImageButton
+                android:id="@+id/ep_college_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryTransparent77"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            tools:ignore="RtlHardcoded">
+
+            <EditText
+                android:id="@+id/ep_department_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:hint="@string/p_department"
+                android:textColor="@color/colorSecondary"
+                android:textSize="15sp"
+                android:textColorHint="@color/colorSecondary"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:inputType="textCapWords"
+                android:gravity="start"
+                android:paddingRight="30dp"
+                android:paddingEnd="30dp"
+                tools:ignore="RtlSymmetry" />
+
+            <ImageButton
+                android:id="@+id/ep_department_cancel"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|end"
+                android:background="@drawable/app_cancel"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null" />
+
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/ep_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:background="@color/colorSecondary"
+            android:text="@string/ep_edit"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"/>
+
+    </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

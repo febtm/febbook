@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "753593351142",
+    "firebase_url": "https://fmt-febulous.firebaseio.com",
+    "project_id": "fmt-febulous",
+    "storage_bucket": "fmt-febulous.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753593351142:android:9a5d76a66dc53407",
+        "android_client_info": {
+          "package_name": "fmt.febulous"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "753593351142-tukcdmkhk35dnc48t7gp28bn74aal224.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fmt.febulous",
+            "certificate_hash": "28e67941af81c2cfe9f97f20ee93174b8a256f8a"
+          }
+        },
+        {
+          "client_id": "753593351142-tljkoc1dn4g4nmlno82qf966d6jjbr6h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fmt.febulous",
+            "certificate_hash": "bc2805c03f55bce46acfa1a412a03e8e21a43ebd"
+          }
+        },
+        {
+          "client_id": "753593351142-0e8jscsokt8e5rmaom8c7qmhv24rt235.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fmt.febulous",
+            "certificate_hash": "e634a81c56cde86703a822097a36fee1714540d4"
+          }
+        },
+        {
+          "client_id": "753593351142-nr9pvvqio7nsq202gi0onr5tq4rrmcbo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fmt.febulous",
+            "certificate_hash": "40a4f1886c664af7c18409ba01295d604140f22d"
+          }
+        },
+        {
+          "client_id": "753593351142-su804olcggmbuc0okc064su3tuv4nkco.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7a-CNkcFg1ZHNgPOG6vLKfkroatk5CbI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-82463638-2"
+          }
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "753593351142-su804olcggmbuc0okc064su3tuv4nkco.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
